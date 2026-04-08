@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Estudiantes - EduNotas{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <div>
+        <h1 class="text-3xl font-bold text-slate-800">Directorio de Estudiantes</h1>
+        <p class="text-slate-500">Registra y administra los alumnos de tu centro educativo.</p>
+    </div>
+</div>
+
+<!-- Estadísticas Básicas -->
+<div class="grid grid-cols-4 gap-4 mb-8">
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col">
+        <span class="text-slate-500 text-sm font-medium">Total Población</span>
+        <span class="text-2xl font-bold text-slate-800">{{ stats.total }}</span>
+    </div>
+    <div class="bg-blue-50 p-4 rounded-xl shadow-sm border border-blue-100 flex flex-col">
+        <span class="text-blue-600 text-sm font-medium">Masculino</span>
+        <span class="text-2xl font-bold text-blue-900">{{ stats.masculinos }}</span>
+    </div>
+    <div class="bg-pink-50 p-4 rounded-xl shadow-sm border border-pink-100 flex flex-col">
+        <span class="text-pink-600 text-sm font-medium">Femenino</span>
+        <span class="text-2xl font-bold text-pink-900">{{ stats.femeninos }}</span>
+    </div>
+    <div class="bg-slate-50 p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col">
+        <span class="text-slate-600 text-sm font-medium">Otros/N.D.</span>
+        <span class="text-2xl font-bold text-slate-800">{{ stats.otros }}</span>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 gap-8">
+    <!-- Lista de Estudiantes (Ancho completo) -->
+    <div class="w-full">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-slate-50 border-b border-slate-200">
+                    <tr>
+                        <th class="px-6 py-4 font-bold text-slate-700 text-sm uppercase tracking-wider">NIE</th>
+                        <th class="px-6 py-4 font-bold text-slate-700 text-sm uppercase tracking-wider">Apellidos y Nombres</th>
+                        <th class="px-6 py-4 font-bold text-slate-700 text-sm uppercase tracking-wider">Género</th>
+                        <th class="px-6 py-4 font-bold text-slate-700 text-sm uppercase tracking-wider text-right">Secciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for est in estudiantes %}
+                    <tr class="hover:bg-indigo-50/30 transition group">
+                        <td class="px-6 py-4 text-slate-800 font-bold whitespace-nowrap">{{ est.nie }}</td>
+                        <td class="px-6 py-4 text-slate-600 font-medium">{{ est.apellidos }}, {{ est.nombres }}</td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold {% if est.genero == 'Masculino' %}bg-blue-100 text-blue-700{% elif est.genero == 'Femenino' %}bg-pink-100 text-pink-700{% else %}bg-slate-100 text-slate-600{% endif %}">
+                                {{ est.genero }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            {% if est.secciones %}
+                                <div class="flex flex-wrap gap-1 justify-end">
+                                    {% for sec in est.secciones %}
+                                        <span class="bg-indigo-600 text-white font-bold px-2 py-0.5 rounded text-[10px] uppercase shadow-sm">
+                                            {{ sec.nombre }}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <span class="text-slate-400 text-xs italic">Sin matricular</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                         <td colspan="4" class="px-6 py-12 text-center text-slate-500 bg-slate-50/50">
+                            <span class="text-4xl block mb-2">👥</span>
+                            No hay estudiantes registrados en la base de datos central.
+                         </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

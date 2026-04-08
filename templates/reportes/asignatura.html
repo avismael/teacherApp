@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}Reporte de Asignatura - {{ asignatura.nombre }}{% endblock %}
+
+{% block content %}
+<div class="no-print mb-6 flex justify-between items-center">
+    <a href="{{ url_for('reportes.index') }}" class="text-slate-500 hover:text-slate-800 transition flex items-center gap-2">
+        <span>←</span> Volver al Centro de Reportes
+    </a>
+    <button onclick="window.print()" class="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-indigo-700 shadow-md transition flex items-center gap-2">
+        <span>🖨️</span> Imprimir / PDF
+    </button>
+</div>
+
+<div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 print:shadow-none print:border-none print:p-0">
+    <!-- Encabezado del Reporte -->
+    <div class="flex justify-between items-start mb-8 border-b-2 border-slate-800 pb-6">
+        <div>
+            <h1 class="text-2xl font-black text-slate-900 uppercase">Cuadro de Calificaciones Detallado</h1>
+            <p class="text-slate-600 font-medium">Asignatura: <span class="text-indigo-700">{{ asignatura.nombre }}</span></p>
+            <p class="text-slate-600 font-medium">Sección: <span class="text-indigo-700">{{ seccion.nombre }}</span></p>
+        </div>
+        <div class="text-right">
+            <div class="font-bold text-slate-800 text-lg">EduNotas School System</div>
+            <p class="text-slate-500 text-sm">Reporte generado el: {{ now | default('08/04/2026') }}</p>
+        </div>
+    </div>
+
+    <!-- Tabla de Notas -->
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse border border-slate-300">
+            <thead class="bg-slate-100">
+                <tr>
+                    <th rowspan="2" class="border border-slate-300 px-4 py-3 text-sm font-bold text-slate-700 uppercase">Estudiante (Apellidos, Nombres)</th>
+                    {% for p in asignatura.periodos %}
+                        <th colspan="2" class="border border-slate-300 px-2 py-3 text-center text-xs font-bold text-slate-700 uppercase bg-indigo-50">{{ p.nombre }}</th>
+                    {% endfor %}
+                    <th rowspan="2" class="border border-slate-300 px-4 py-3 text-center text-sm font-bold text-white bg-slate-800 uppercase">Final</th>
+                </tr>
+                <tr class="bg-slate-50">
+                    {% for p in asignatura.periodos %}
+                        <th class="border border-slate-300 px-2 py-2 text-center text-[10px] font-semibold text-slate-500 uppercase">Raw</th>
+                        <th class="border border-slate-300 px-2 py-2 text-center text-[10px] font-semibold text-indigo-700 uppercase">Final (Rec)</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+                {% for fila in resumen %}
+                <tr class="hover:bg-slate-50 transition print:hover:bg-transparent">
+                    <td class="border border-slate-300 px-4 py-3 text-sm font-bold text-slate-800">
+                        {{ fila.estudiante.apellidos }}, {{ fila.estudiante.nombres }}
+                        <div class="text-[9px] text-slate-400 font-normal">NIE: {{ fila.estudiante.nie }}</div>
+                    </td>
+                    {% for p_data in fila.periodos %}
+                        <td class="border border-slate-300 px-2 py-3 text-center text-xs text-slate-500">
+                            {{ "%.2f"|format(p_data.raw) }}
+                        </td>
+                        <td class="border border-slate-300 px-2 py-3 text-center text-xs font-bold {% if p_data.final >= 6.0 %}text-emerald-700 bg-emerald-50/30{% else %}text-red-700 bg-red-50/30{% endif %}">
+                            {{ "%.2f"|format(p_data.final) }}
+                        </td>
+                    {% endfor %}
+                    <td class="border border-slate-300 px-4 py-3 text-center text-lg font-black {% if fila.nota_final >= 6.0 %}text-emerald-700{% else %}text-red-700{% endif %}">
+                        {{ "%.2f"|format(fila.nota_final) }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Leyenda / Firmas (Print Only) -->
+    <div class="hidden print:block mt-20">
+        <div class="grid grid-cols-2 gap-20">
+            <div class="text-center">
+                <div class="border-t border-slate-800 pt-2 font-bold text-slate-800 text-sm">Firma del Docente</div>
+                <div class="text-xs text-slate-500">Responsable de la Asignatura</div>
+            </div>
+            <div class="text-center">
+                <div class="border-t border-slate-800 pt-2 font-bold text-slate-800 text-sm">Sello / Firma Director</div>
+                <div class="text-xs text-slate-500">Dirección Académica</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    aside { display: none !important; }
+    header { display: none !important; }
+    main { padding: 0 !important; width: 100% !important; margin: 0 !important; }
+    .no-print { display: none !important; }
+    .flex-1 { overflow: visible !important; }
+    body { background: white !important; padding: 1cm !important; }
+    table { page-break-inside: auto; }
+    tr { page-break-inside: avoid; page-break-after: auto; }
+}
+</style>
+{% endblock %}

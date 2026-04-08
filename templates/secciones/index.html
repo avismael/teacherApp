@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Secciones - EduNotas{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <div>
+        <h1 class="text-3xl font-bold text-slate-800">Secciones (Grupos)</h1>
+        <p class="text-slate-500">Administra los grupos de estudiantes independientes.</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div class="col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-fit">
+        <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">Crear Nueva Sección</h3>
+        <form action="{{ url_for('secciones.index') }}" method="POST" class="flex flex-col gap-4">
+            <div>
+                <label class="text-sm font-medium text-slate-700 block mb-1">Nombre (ej: Grado 1 Seccion A)</label>
+                <input type="text" name="nombre" class="w-full border border-slate-300 rounded-lg px-3 py-2" required>
+            </div>
+            <button type="submit" class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary-hover shadow w-full">Crear Sección</button>
+        </form>
+    </div>
+
+    <div class="col-span-1 md:col-span-2">
+        {% if secciones %}
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <ul class="divide-y divide-slate-100">
+                    {% for sec in secciones %}
+                    <li class="hover:bg-slate-50 transition p-4 flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-lg">{{ sec.nombre }}</h4>
+                            <p class="text-slate-500 text-sm mt-1">{{ sec.estudiantes|length }} estudiantes inscritos</p>
+                        </div>
+                        <a href="{{ url_for('secciones.detalle', id=sec.id) }}" class="bg-slate-100 text-slate-700 px-4 py-2 rounded font-medium hover:bg-slate-200">
+                            Administrar &rarr;
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% else %}
+            <div class="text-center py-10 bg-white rounded-xl border border-dashed border-slate-300">
+                <p class="text-slate-500">No hay secciones. Crea una a la izquierda.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% block title %}Constructor de Rúbrica - {{ actividad.nombre }}{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <div class="flex gap-2 text-sm text-slate-500 font-medium mb-1">
+        <a href="{{ url_for('asignaturas.index') }}" class="hover:text-primary">Asignaturas</a> 
+        <span>/</span> 
+        <a href="{{ url_for('asignaturas.detalle', id=actividad.periodo.asignatura_id) }}" class="hover:text-primary">{{ actividad.periodo.asignatura.nombre }}</a>
+        <span>/</span> 
+        <span class="text-slate-800">Constructor de Rúbrica</span>
+    </div>
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-800">Rúbrica: {{ actividad.nombre }}</h1>
+            <p class="text-slate-500">Diseñe los criterios y niveles de evaluación. Asegúrese de que la puntuación máxima otorgable sume exactamente 10 puntos.</p>
+        </div>
+        <a href="{{ url_for('asignaturas.detalle', id=actividad.periodo.asignatura_id) }}" class="bg-slate-200 text-slate-700 font-medium px-4 py-2 rounded-lg hover:bg-slate-300 transition">
+            Volver
+        </a>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Panel Izquierdo: CSV Import -->
+    <div class="lg:col-span-1 space-y-6">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">📥 Importar desde CSV</h3>
+            <p class="text-sm text-slate-600 mb-4">Sube un archivo .csv con la siguiente estructura (con o sin encabezados): <br> <code class="bg-slate-100 p-1 rounded">Criterio, Nivel, Puntos, Descripcion</code></p>
+            <form action="{{ url_for('evaluaciones.importar_rubrica_csv', actividad_id=actividad.id) }}" method="POST" enctype="multipart/form-data">
+                <input type="file" name="csv_file" accept=".csv" required class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 mb-4">
+                <button type="submit" class="w-full bg-slate-800 text-white font-bold py-2 px-4 rounded-lg hover:bg-slate-900 transition">Cargar CSV</button>
+            </form>
+        </div>
+        
+        <div class="bg-indigo-50 p-6 rounded-2xl border border-indigo-100">
+            <h3 class="text-lg font-bold text-indigo-900 mb-2">Puntos Máximos de Rúbrica</h3>
+            <div class="text-4xl font-extrabold text-indigo-600" id="max-score-display">0.0</div>
+            <p class="text-sm text-indigo-700 mt-2">La suma de los niveles más altos de cada criterio debe ser 10.0</p>
+        </div>
+    </div>
+    
+    <!-- Panel Derecho: Constructor Manual -->
+    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold text-slate-800">Constructor Interactivo</h3>
+            <button onclick="agregarCriterio()" class="bg-primary/10 text-primary font-bold py-2 px-4 rounded-lg hover:bg-primary/20 transition">
+                + Añadir Criterio
+            </button>
+        </div>
+        
+        <div id="criterios-container" class="space-y-6">
+            <!-- Criterios inyectados por JS -->
+        </div>
+        
+        <div class="mt-8 border-t border-slate-200 pt-6 flex justify-end">
+            <button onclick="guardarRubrica()" class="bg-primary text-white font-bold py-3 px-8 rounded-lg hover:bg-primary-hover shadow-md transition flex items-center gap-2 text-lg">
+                <span>💾</span> Guardar Rúbrica
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let criterios = [];
+
+    // Cargar datos existentes si los hay en la DB
+    // Para simplificar, obtenemos JSON del DOM (se imprime desde flask)
+    {% set criterios_json = [] %}
+    {% for c in actividad.criterios %}
+        {% set niveles_json = [] %}
+        {% for n in c.niveles %}
+            {% set _ = niveles_json.append({"nombre": n.nombre, "descripcion": n.descripcion, "puntaje": n.puntaje}) %}
+        {% endfor %}
+        {% set _ = criterios_json.append({"nombre": c.nombre, "niveles": niveles_json}) %}
+    {% endfor %}
+    
+    criterios = {{ criterios_json | tojson | safe }};
+    
+    if(criterios.length === 0){
+        // Default genérico
+        criterios.push({
+            nombre: "Nuevo Criterio",
+            niveles: [
+                {nombre: "Excelente", descripcion: "", puntaje: 0.0}
+            ]
+        });
+    }
+
+    function renderizarConstructor() {
+        const container = document.getElementById('criterios-container');
+        container.innerHTML = '';
+        
+        let subtotalMaximo = 0;
+
+        criterios.forEach((c, cIndex) => {
+            const critDiv = document.createElement('div');
+            critDiv.className = "border border-slate-200 rounded-xl overflow-hidden shadow-sm";
+            
+            // max points for this criteria
+            let maxPoints = 0;
+            if(c.niveles.length > 0) {
+                maxPoints = Math.max(...c.niveles.map(n => parseFloat(n.puntaje) || 0));
+            }
+            subtotalMaximo += maxPoints;
+
+            let html = `
+                <div class="bg-slate-50 p-4 border-b border-slate-200 flex justify-between items-center group">
+                    <input type="text" value="${c.nombre}" onchange="updateCritName(${cIndex}, this.value)" class="font-bold text-lg text-slate-800 bg-transparent border-b-2 border-transparent focus:border-primary focus:outline-none w-2/3 px-2 py-1">
+                    <button onclick="borrarCriterio(${cIndex})" class="text-red-500 hover:bg-red-50 p-2 rounded-lg opacity-50 group-hover:opacity-100 transition">🗑 Borrar</button>
+                </div>
+                <div class="p-4 overflow-x-auto">
+                    <div class="flex gap-4 min-w-max">
+            `;
+            
+            c.niveles.forEach((n, nIndex) => {
+                html += `
+                        <div class="bg-white border ${parseFloat(n.puntaje) === maxPoints && maxPoints > 0 ? 'border-primary/50 ring-1 ring-primary/20' : 'border-slate-200'} rounded-lg p-3 w-64 relative group flex flex-col">
+                            <button onclick="borrarNivel(${cIndex}, ${nIndex})" class="absolute top-2 right-2 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition">×</button>
+                            
+                            <label class="text-xs text-slate-500 font-bold uppercase mb-1">Puntos</label>
+                            <input type="number" step="0.1" value="${n.puntaje}" onchange="updateNivPuntos(${cIndex}, ${nIndex}, this.value)" class="font-black text-2xl text-slate-800 w-full mb-3 focus:outline-none border-b border-transparent focus:border-slate-300">
+                            
+                            <label class="text-xs text-slate-500 font-bold uppercase mb-1">Nivel</label>
+                            <input type="text" value="${n.nombre}" onchange="updateNivNombre(${cIndex}, ${nIndex}, this.value)" placeholder="Ej: Bueno" class="font-bold text-slate-700 w-full mb-3 focus:outline-none border-b border-transparent focus:border-slate-300">
+                            
+                            <label class="text-xs text-slate-500 font-bold uppercase mb-1">Descripción</label>
+                            <textarea rows="2" onchange="updateNivDesc(${cIndex}, ${nIndex}, this.value)" class="text-sm text-slate-600 w-full resize-none focus:outline-none border-b border-transparent focus:border-slate-300 flex-1" placeholder="Descripción...">${n.descripcion}</textarea>
+                        </div>
+                `;
+            });
+
+            html += `
+                        <button onclick="agregarNivel(${cIndex})" class="w-64 border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary hover:bg-primary/5 transition font-medium min-h-[200px]">
+                            + Añadir Nivel
+                        </button>
+                    </div>
+                </div>
+            `;
+            critDiv.innerHTML = html;
+            container.appendChild(critDiv);
+        });
+
+        document.getElementById('max-score-display').innerText = subtotalMaximo.toFixed(1);
+        if(subtotalMaximo > 10.1 || subtotalMaximo < 9.9) {
+            document.getElementById('max-score-display').classList.add('text-red-600');
+            document.getElementById('max-score-display').classList.remove('text-indigo-600');
+        } else {
+            document.getElementById('max-score-display').classList.remove('text-red-600');
+            document.getElementById('max-score-display').classList.add('text-indigo-600');
+        }
+    }
+
+    function agregarCriterio() {
+        criterios.push({nombre: "Nuevo Criterio", niveles: []});
+        renderizarConstructor();
+    }
+    
+    function borrarCriterio(cIndex) {
+        if(confirm('¿Borrar criterio completo?')) {
+            criterios.splice(cIndex, 1);
+            renderizarConstructor();
+        }
+    }
+    
+    function agregarNivel(cIndex) {
+        criterios[cIndex].niveles.push({nombre: "Nuevo", descripcion: "", puntaje: 0});
+        renderizarConstructor();
+    }
+    
+    function borrarNivel(cIndex, nIndex) {
+        criterios[cIndex].niveles.splice(nIndex, 1);
+        renderizarConstructor();
+    }
+    
+    function updateCritName(cIdx, val) { criterios[cIdx].nombre = val; renderizarConstructor(); }
+    function updateNivNombre(cIdx, nIdx, val) { criterios[cIdx].niveles[nIdx].nombre = val; renderizarConstructor(); }
+    function updateNivPuntos(cIdx, nIdx, val) { criterios[cIdx].niveles[nIdx].puntaje = val; renderizarConstructor(); }
+    function updateNivDesc(cIdx, nIdx, val) { criterios[cIdx].niveles[nIdx].descripcion = val; renderizarConstructor(); }
+
+    function guardarRubrica() {
+        fetch("{{ url_for('evaluaciones.guardar_rubrica', actividad_id=actividad.id) }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ criterios: criterios })
+        }).then(res => res.json()).then(data => {
+            if(data.success) {
+                alert("¡Rúbrica guardada exitosamente!");
+                window.location.reload();
+            }
+        });
+    }
+
+    renderizarConstructor();
+</script>
+{% endblock %}

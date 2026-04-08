@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Inicio - EduNotas{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">Panel de Control</h1>
+    <p class="text-slate-500 mt-1">Bienvenido a tu registro de notas, resumen estadístico.</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Stat 1 -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md transition-shadow">
+        <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
+            📖
+        </div>
+        <div>
+            <div class="text-sm font-medium text-slate-500">Asignaturas</div>
+            <div class="text-2xl font-bold text-slate-800">{{ total_asignaturas }}</div>
+        </div>
+    </div>
+    <!-- Stat 2 -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md transition-shadow">
+        <div class="w-12 h-12 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center text-xl">
+            👥
+        </div>
+        <div>
+            <div class="text-sm font-medium text-slate-500">Secciones</div>
+            <div class="text-2xl font-bold text-slate-800">{{ total_secciones }}</div>
+        </div>
+    </div>
+    <!-- Stat 3 -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md transition-shadow">
+        <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+            🎓
+        </div>
+        <div>
+            <div class="text-sm font-medium text-slate-500">Estudiantes</div>
+            <div class="text-2xl font-bold text-slate-800">{{ total_estudiantes }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+    <h2 class="text-lg font-bold text-slate-800 mb-4">Tus Asignaturas</h2>
+    {% if asignaturas %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for a in asignaturas %}
+            <a href="{{ url_for('asignaturas.detalle', id=a.id) }}" class="block p-4 rounded-xl border border-slate-200 hover:border-primary hover:shadow-md transition-all group">
+                <h3 class="font-bold text-slate-800 group-hover:text-primary">{{ a.nombre }}</h3>
+                <p class="text-sm text-slate-500 mt-1 line-clamp-2">{{ a.descripcion or 'Sin descripción' }}</p>
+                <div class="mt-4 text-xs font-medium bg-slate-100 text-slate-600 py-1 px-2 rounded w-fit">
+                    {{ a.secciones|length }} secciones
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300">
+            <span class="text-4xl block mb-2">📂</span>
+            <h3 class="text-slate-600 font-medium">Aún no hay asignaturas registradas.</h3>
+            <a href="{{ url_for('asignaturas.index') }}" class="mt-4 inline-block bg-primary text-white font-medium py-2 px-6 rounded-lg hover:bg-primary-hover transition-colors shadow-md">
+                + Crear Primera Asignatura
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

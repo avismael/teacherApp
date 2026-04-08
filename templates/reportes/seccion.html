@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}Reporte Consolidado Sección - {{ seccion.nombre }}{% endblock %}
+
+{% block content %}
+<div class="no-print mb-6 flex justify-between items-center">
+    <a href="{{ url_for('reportes.index') }}" class="text-slate-500 hover:text-slate-800 transition flex items-center gap-2">
+        <span>←</span> Volver al Centro de Reportes
+    </a>
+    <button onclick="window.print()" class="bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-emerald-700 shadow-md transition flex items-center gap-2">
+        <span>🖨️</span> Imprimir Consolidado
+    </button>
+</div>
+
+<div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 print:shadow-none print:border-none print:p-0">
+    <!-- Encabezado -->
+    <div class="text-center mb-10 border-b-4 border-emerald-600 pb-6">
+        <h1 class="text-3xl font-black text-slate-900 uppercase tracking-tighter">Consolidado General de Calificaciones</h1>
+        <div class="text-emerald-700 font-bold text-xl uppercase tracking-widest mt-1">Sección: {{ seccion.nombre }}</div>
+        <p class="text-slate-500 text-sm mt-4 italic">Resumen de promedios finales por asignatura y promedio general de ciclo.</p>
+    </div>
+
+    <!-- Tabla de Notas Consolidado -->
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse border border-slate-300">
+            <thead class="bg-slate-100">
+                <tr>
+                    <th class="border border-slate-300 px-4 py-4 text-xs font-black text-slate-700 uppercase bg-slate-200">N°</th>
+                    <th class="border border-slate-300 px-4 py-4 text-xs font-black text-slate-700 uppercase bg-slate-200">Estudiante (Apellidos, Nombres)</th>
+                    {% for asig in asignaturas %}
+                        <th class="border border-slate-300 px-2 py-4 text-center text-[10px] font-black text-slate-700 uppercase w-20 break-words writing-mode-vertical">
+                            {{ asig.nombre }}
+                        </th>
+                    {% endfor %}
+                    <th class="border border-slate-300 px-4 py-4 text-center text-xs font-black text-white bg-emerald-700 uppercase">Prom. Gral</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+                {% for fila in matriz %}
+                <tr class="hover:bg-emerald-50/30 transition print:hover:bg-transparent">
+                    <td class="border border-slate-300 px-4 py-3 text-xs text-slate-500 text-center">{{ loop.index }}</td>
+                    <td class="border border-slate-300 px-4 py-3 text-sm font-bold text-slate-800">
+                        {{ fila.estudiante.apellidos }}, {{ fila.estudiante.nombres }}
+                        <span class="text-[9px] text-slate-400 block font-normal">NIE: {{ fila.estudiante.nie }}</span>
+                    </td>
+                    {% for n_data in fila.notas %}
+                        <td class="border border-slate-300 px-2 py-3 text-center text-xs font-bold {% if n_data.nota >= 6.0 %}text-slate-700{% else %}text-red-700 bg-red-50/20{% endif %}">
+                            {{ "%.2f"|format(n_data.nota) }}
+                        </td>
+                    {% endfor %}
+                    <td class="border border-slate-300 px-4 py-3 text-center text-sm font-black bg-emerald-50 text-emerald-800">
+                        {{ "%.2f"|format(fila.promedio_general) }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Firma Centralizada (Print Only) -->
+    <div class="hidden print:block mt-24">
+        <div class="flex justify-center">
+            <div class="text-center w-80">
+                <div class="border-t-2 border-slate-900 pt-3 font-black text-slate-900 uppercase">Director de Centro</div>
+                <div class="text-xs text-slate-500 italic mt-1 font-bold">Autentificación de Cuadro Consolidado</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    aside { display: none !important; }
+    header { display: none !important; }
+    main { padding: 0 !important; width: 100% !important; margin: 0 !important; }
+    .no-print { display: none !important; }
+    .flex-1 { overflow: visible !important; }
+    body { background: white !important; padding: 1.5cm !important; }
+    table { page-break-inside: auto; }
+    tr { page-break-inside: avoid; page-break-after: auto; }
+    
+    /* Rotate long subject names to fit better if needed */
+    /* .writing-mode-vertical { writing-mode: vertical-rl; transform: rotate(180deg); } */
+}
+</style>
+{% endblock %}

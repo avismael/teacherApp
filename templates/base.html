@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Registro de Notas{% endblock %}</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS V4 CDN -->
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style type="text/tailwindcss">
+        @theme {
+            --font-sans: "Inter", sans-serif;
+            --color-primary: #4F46E5;
+            --color-primary-hover: #4338CA;
+            --color-secondary: #0F172A;
+            --color-accent: #38BDF8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex">
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-64 bg-secondary text-white hidden md:flex flex-col shadow-lg transition-all duration-300">
+        <div class="h-16 flex items-center px-6 font-bold text-xl tracking-tight border-b border-slate-700/50">
+            <span class="text-accent mr-2">📚</span> EduNotas
+        </div>
+        <nav class="flex-1 py-6 flex flex-col gap-2 px-4">
+            <a href="{{ url_for('dashboard.index') }}" class="px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if request.endpoint == 'dashboard.index' %}bg-primary hover:bg-primary{% endif %}">
+                🏠 Panel Inicial
+            </a>
+            <a href="{{ url_for('asignaturas.index') }}" class="px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'asignaturas' in request.endpoint %}bg-slate-800{% endif %}">
+                📖 Asignaturas
+            </a>
+            <a href="{{ url_for('estudiantes.index') }}" class="px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'estudiantes' in request.endpoint %}bg-slate-800{% endif %}">
+                🎓 Estudiantes
+            </a>
+            <a href="{{ url_for('secciones.index') }}" class="px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'secciones' in request.endpoint %}bg-slate-800{% endif %}">
+                🏫 Secciones
+            </a>
+            <a href="{{ url_for('reportes.index') }}" class="px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'reportes' in request.endpoint %}bg-slate-800{% endif %}">
+                📝 Reportes Académicos
+            </a>
+        </nav>
+        <div class="p-6 text-sm text-slate-400 border-t border-slate-700/50">
+            Herramienta Docente &copy; 2026
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col min-h-screen overflow-hidden">
+        
+        <!-- Top header for mobile -->
+        <header class="md:hidden h-16 bg-white shadow-sm flex items-center justify-between px-4">
+            <div class="font-bold text-lg text-slate-800"><span class="text-primary mr-2">📚</span> EduNotas</div>
+            <button id="mobile-menu-btn" class="text-slate-500 hover:text-slate-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+        </header>
+
+        <!-- Flash messages -->
+        <div class="px-8 pt-6">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="p-4 mb-4 rounded-xl shadow-sm text-sm {% if category == 'error' %}bg-red-50 text-red-700 border border-red-200{% elif category == 'success' %}bg-emerald-50 text-emerald-700 border border-emerald-200{% else %}bg-blue-50 text-blue-700 border border-blue-200{% endif %} anim-fade-in">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <div class="flex-1 overflow-auto p-4 md:p-8">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

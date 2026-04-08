@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block title %}Boletín de Notas - {{ estudiante.apellidos }}, {{ estudiante.nombres }}{% endblock %}
+
+{% block content %}
+<div class="no-print mb-6 flex justify-between items-center">
+    <a href="{{ url_for('reportes.index') }}" class="text-slate-500 hover:text-slate-800 transition flex items-center gap-2">
+        <span>←</span> Volver al Centro de Reportes
+    </a>
+    <button onclick="window.print()" class="bg-amber-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-amber-700 shadow-md transition flex items-center gap-2">
+        <span>🖨️</span> Imprimir Boletín
+    </button>
+</div>
+
+<!-- Estilo de Boletín Individual -->
+<div class="bg-white p-12 rounded-2xl shadow-sm border-2 border-slate-100 max-w-4xl mx-auto print:shadow-none print:border-2 print:border-slate-800 print:p-8">
+    
+    <!-- Encabezado Institucional -->
+    <div class="text-center border-b-2 border-slate-200 pb-8 mb-8">
+        <div class="text-3xl font-black text-slate-900 uppercase">EduNotas School System</div>
+        <div class="text-slate-500 font-bold tracking-widest mt-1">CERTIFICACIÓN INDIVIDUAL DE CALIFICACIONES</div>
+        <div class="mt-4 inline-block bg-slate-900 text-white px-4 py-1 text-xs font-bold uppercase rounded">Año Lectivo 2026</div>
+    </div>
+
+    <!-- Datos del Estudiante -->
+    <div class="grid grid-cols-2 gap-6 mb-10 bg-slate-50 p-6 rounded-xl border border-slate-200 print:bg-transparent print:border-none print:p-0">
+        <div>
+            <label class="text-[10px] uppercase font-black text-slate-400 block mb-1">Nombre Completo del Estudiante</label>
+            <div class="text-xl font-bold text-slate-900">{{ estudiante.apellidos }}, {{ estudiante.nombres }}</div>
+        </div>
+        <div class="text-right">
+            <label class="text-[10px] uppercase font-black text-slate-400 block mb-1">Número de Identificación (NIE)</label>
+            <div class="text-xl font-mono font-bold text-indigo-700">{{ estudiante.nie }}</div>
+        </div>
+    </div>
+
+    <!-- Tabla de Calificaciones -->
+    <table class="w-full mb-12 border-collapse">
+        <thead>
+            <tr class="bg-slate-900 text-white">
+                <th class="px-4 py-3 text-left text-xs font-black uppercase tracking-wider rounded-tl-lg">Asignatura</th>
+                <th class="px-4 py-3 text-center text-xs font-black uppercase tracking-wider">P1</th>
+                <th class="px-4 py-3 text-center text-xs font-black uppercase tracking-wider">P2</th>
+                <th class="px-4 py-3 text-center text-xs font-black uppercase tracking-wider">P3</th>
+                <th class="px-4 py-3 text-center text-xs font-black uppercase tracking-wider rounded-tr-lg">Final</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200">
+            {% for item in reporte %}
+            <tr class="hover:bg-amber-50/20 transition">
+                <td class="px-4 py-4">
+                    <div class="font-bold text-slate-800">{{ item.asignatura.nombre }}</div>
+                    <div class="text-[9px] text-slate-400 italic">Grupo: {{ item.seccion.nombre }}</div>
+                </td>
+                {% for p_data in item.detalle.periodos %}
+                    <td class="px-4 py-4 text-center font-medium text-slate-600">
+                        {{ "%.1f"|format(p_data.final) }}
+                    </td>
+                {% endfor %}
+                <!-- Espacios vacíos si hay menos de 3 periodos para mantener estructura -->
+                {% for _ in range(3 - item.detalle.periodos|length) %}
+                    <td class="px-4 py-4 text-center font-medium text-slate-300">-</td>
+                {% endfor %}
+                <td class="px-4 py-4 text-center">
+                    <div class="px-2 py-1 rounded font-black text-sm {% if item.detalle.nota_final >= 6.0 %}text-emerald-700 bg-emerald-50{% else %}text-red-700 bg-red-50{% endif %}">
+                        {{ "%.2f"|format(item.detalle.nota_final) }}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Resumen de Resultados -->
+    <div class="border-2 border-slate-900 p-6 rounded-xl mb-12 flex justify-between items-center">
+        <div>
+            <div class="text-[10px] font-black text-slate-400 uppercase mb-1">Resultado de Ciclo</div>
+            {% set total_aprobadas = reporte|selectattr('detalle.aprobado')|list|length %}
+            {% set total_materias = reporte|length %}
+            <div class="text-2xl font-black {% if total_aprobadas == total_materias %}text-emerald-700{% else %}text-amber-600{% endif %}">
+                {% if total_aprobadas == total_materias %}
+                    APROBADO
+                {% else %}
+                    PENDIENTE / PROCESO
+                {% endif %}
+            </div>
+        </div>
+        <div class="text-right">
+            <div class="text-[10px] font-black text-slate-400 uppercase mb-1">Materias Aprobadas</div>
+            <div class="text-2xl font-black text-slate-900">{{ total_aprobadas }} / {{ total_materias }}</div>
+        </div>
+    </div>
+
+    <!-- Área de Firmas -->
+    <div class="mt-24 grid grid-cols-2 gap-16">
+        <div class="text-center">
+            <div class="border-t-2 border-slate-900 pt-3">
+                <div class="font-black text-slate-900 uppercase">Firma del Director</div>
+                <div class="text-[9px] text-slate-500 font-bold">Sello de la Institución</div>
+            </div>
+        </div>
+        <div class="text-center">
+            <div class="border-t-2 border-slate-900 pt-3">
+                <div class="font-black text-slate-900 uppercase">Firma Padre / Tutor</div>
+                <div class="text-[9px] text-slate-500 font-bold">Recibido Conforme</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+@media print {
+    aside { display: none !important; }
+    header { display: none !important; }
+    main { padding: 0 !important; width: 100% !important; margin: 0 !important; }
+    .no-print { display: none !important; }
+    .flex-1 { overflow: visible !important; }
+    body { background: white !important; padding: 0 !important; }
+    .bg-white { border: none !important; }
+}
+</style>
+{% endblock %}

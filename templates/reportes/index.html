@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}Reportes Académicos - EduNotas{% endblock %}
+
+{% block content %}
+<div class="mb-8 p-6 bg-white rounded-2xl shadow-sm border border-slate-100">
+    <h1 class="text-3xl font-bold text-slate-800">Centro de Reportes</h1>
+    <p class="text-slate-500 mt-2">Genera informes detallados para asignaturas, secciones o estudiantes individuales.</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    
+    <!-- Reporte por Asignatura -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full">
+        <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-2xl mb-4">📖</div>
+        <h3 class="text-xl font-bold text-slate-800 mb-2">Por Asignatura</h3>
+        <p class="text-sm text-slate-500 mb-6 flex-1">Cuadros de notas detallados por materia. Incluye actividades, recuperaciones y promedios por periodo.</p>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="text-xs font-bold text-slate-400 uppercase mb-1 block">Seleccionar Materia y Grupo</label>
+                <div class="flex flex-col gap-2">
+                    {% for asig in asignaturas %}
+                        {% for sec in asig.secciones %}
+                        <a href="{{ url_for('reportes.reporte_asignatura', asignatura_id=asig.id, seccion_id=sec.id) }}" class="text-sm p-3 border border-slate-100 rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition group flex justify-between items-center">
+                            <div>
+                                <span class="font-bold text-slate-700 block">{{ asig.nombre }}</span>
+                                <span class="text-xs text-slate-500">{{ sec.nombre }}</span>
+                            </div>
+                            <span class="opacity-0 group-hover:opacity-100 transition text-indigo-600">→</span>
+                        </a>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reporte por Sección -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full">
+        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-2xl mb-4">🏫</div>
+        <h3 class="text-xl font-bold text-slate-800 mb-2">Por Sección (Consolidado)</h3>
+        <p class="text-sm text-slate-500 mb-6 flex-1">Resumen general del grupo. Compara el rendimiento de los estudiantes en todas sus materias matriculadas.</p>
+        
+        <div class="space-y-2">
+            <label class="text-xs font-bold text-slate-400 uppercase mb-1 block">Seleccionar Sección</label>
+            {% for sec in secciones %}
+                <a href="{{ url_for('reportes.reporte_seccion', seccion_id=sec.id) }}" class="text-sm p-3 border border-slate-100 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition group flex justify-between items-center">
+                    <span class="font-bold text-slate-700">{{ sec.nombre }}</span>
+                    <span class="opacity-0 group-hover:opacity-100 transition text-emerald-600">→</span>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Reporte por Estudiante -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full">
+        <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center text-2xl mb-4">🎓</div>
+        <h3 class="text-xl font-bold text-slate-800 mb-2">Por Estudiante (Boletín)</h3>
+        <p class="text-sm text-slate-500 mb-6 flex-1">Genera la boleta de calificaciones individual. Ideal para entrega de notas a padres de familia.</p>
+        
+        <div class="space-y-2 max-h-96 overflow-auto pr-2">
+            <label class="text-xs font-bold text-slate-400 uppercase mb-1 block">Buscar Estudiante</label>
+            {% for est in estudiantes %}
+                <a href="{{ url_for('reportes.reporte_estudiante', estudiante_id=est.id) }}" class="text-sm p-3 border border-slate-100 rounded-lg hover:border-amber-300 hover:bg-amber-50 transition group flex justify-between items-center">
+                    <div>
+                        <span class="font-bold text-slate-700 block">{{ est.apellidos }}, {{ est.nombres }}</span>
+                        <span class="text-xs text-slate-500">NIE: {{ est.nie }}</span>
+                    </div>
+                    <span class="opacity-0 group-hover:opacity-100 transition text-amber-600">→</span>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
