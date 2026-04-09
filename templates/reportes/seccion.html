@@ -38,7 +38,6 @@
                             {{ asig.nombre }}
                         </th>
                     {% endfor %}
-                    <th class="border border-slate-300 px-4 py-4 text-center text-xs font-black text-white bg-emerald-700 uppercase">Prom. Gral</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-200">
@@ -54,9 +53,6 @@
                             {{ "%.2f"|format(n_data.nota) }}
                         </td>
                     {% endfor %}
-                    <td class="border border-slate-300 px-4 py-3 text-center text-sm font-black bg-emerald-50 text-emerald-800">
-                        {{ "%.2f"|format(fila.promedio_general) }}
-                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -265,12 +265,12 @@ def exportar_consolidado_excel(seccion_id):
     border_thin = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
     
     # Encabezado Institucional
-    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(asignaturas) + 3)
+    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(asignaturas) + 2)
     ws['A1'] = "INSTITUTO NACIONAL DE SANTA ELENA"
     ws['A1'].font = Font(bold=True, size=16)
     ws['A1'].alignment = align_center
     
-    ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=len(asignaturas) + 3)
+    ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=len(asignaturas) + 2)
     ws['A2'] = f"REPORTE CONSOLIDADO: {seccion.nombre}"
     ws['A2'].font = Font(bold=True, size=12)
     ws['A2'].alignment = align_center
@@ -279,7 +279,6 @@ def exportar_consolidado_excel(seccion_id):
     headers = ["N°", "Estudiante (Apellidos, Nombres)"]
     for asig in asignaturas:
         headers.append(asig.nombre)
-    headers.append("PROM. GRAL")
     
     for col_num, header in enumerate(headers, 1):
         cell = ws.cell(row=4, column=col_num)
@@ -294,9 +293,6 @@ def exportar_consolidado_excel(seccion_id):
         ws.cell(row=row_idx, column=1, value=row_idx-4).border = border_thin
         ws.cell(row=row_idx, column=2, value=f"{est.apellidos}, {est.nombres}").border = border_thin
         
-        suma_promedios = 0
-        materias_contadas = 0
-        
         for col_idx, asig in enumerate(asignaturas, 3):
             # Calcular nota final de esta materia para este estudiante
             data_res = calcular_resumen_asignatura(asig, seccion)
@@ -310,21 +306,11 @@ def exportar_consolidado_excel(seccion_id):
             
             if nota < 6.0:
                 cell_n.font = Font(color="FF0000")
-            
-            suma_promedios += nota
-            materias_contadas += 1
-            
-        # Promedio General
-        prom_gral = suma_promedios / materias_contadas if materias_contadas > 0 else 0
-        cell_avg = ws.cell(row=row_idx, column=len(asignaturas) + 3, value=round(prom_gral, 2))
-        cell_avg.border = border_thin
-        cell_avg.font = font_bold
-        cell_avg.alignment = align_center
         
     # Ajustar dimensiones
     ws.column_dimensions['A'].width = 5
     ws.column_dimensions['B'].width = 40
-    for col_idx in range(3, len(asignaturas) + 4):
+    for col_idx in range(3, len(asignaturas) + 3):
         ws.column_dimensions[ws.cell(row=4, column=col_idx).column_letter].width = 15
 
     # Guardar y enviar
