@@ -69,16 +69,22 @@
             <div class="space-y-6">
                 {% for periodo in asignatura.periodos %}
                 <div class="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-                    <div class="bg-slate-50 p-4 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div>
-                            <h3 class="font-bold text-slate-800 text-lg">{{ periodo.nombre }}</h3>
-                            {% set total_pond = periodo.actividades | map(attribute='ponderacion') | sum %}
-                            <p class="text-xs font-semibold mt-1 px-2 py-0.5 rounded inline-block {% if total_pond == 100 %}bg-emerald-100 text-emerald-700{% elif total_pond > 100 %}bg-red-100 text-red-700{% else %}bg-amber-100 text-amber-700{% endif %}">
-                                Total Asignado: {{ total_pond|round(1) }}% / 100%
-                            </p>
+                    <!-- Periodo Header (Accordion Trigger) -->
+                    <div class="bg-slate-50 p-4 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cursor-pointer hover:bg-slate-100 transition" onclick="toggleAccordion('periodo-content-{{ periodo.id }}', 'icon-{{ periodo.id }}')">
+                        <div class="flex items-center gap-3">
+                            <span id="icon-{{ periodo.id }}" class="text-slate-400 transition-transform duration-300">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                            </span>
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-lg">{{ periodo.nombre }}</h3>
+                                {% set total_pond = periodo.actividades | map(attribute='ponderacion') | sum %}
+                                <p class="text-xs font-semibold mt-1 px-2 py-0.5 rounded inline-block {% if total_pond == 100 %}bg-emerald-100 text-emerald-700{% elif total_pond > 100 %}bg-red-100 text-red-700{% else %}bg-amber-100 text-amber-700{% endif %}">
+                                    Total Asignado: {{ total_pond|round(1) }}% / 100%
+                                </p>
+                            </div>
                         </div>
                         
-                        <div class="flex gap-2">
+                        <div class="flex gap-2" onclick="event.stopPropagation()">
                             <a href="{{ url_for('reportes.reporte_planificacion', periodo_id=periodo.id) }}" class="text-xs bg-white border border-slate-300 text-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition shadow-sm flex gap-1 items-center font-bold">
                                 <span>🖨️</span> Ver Plan de Periodo
                             </a>
@@ -95,33 +101,36 @@
                         </div>
                     </div>
                     
-                    {% if periodo.actividades %}
-                    <ul class="divide-y divide-slate-100 bg-white">
-                        {% for act in periodo.actividades %}
-                        <li class="px-6 py-3 flex justify-between items-center group">
-                            <span class="text-slate-700 font-medium w-1/3">{{ act.nombre }}</span>
-                            <div class="flex gap-4 items-center">
-                                <div class="flex gap-1 items-center">
-                                    <a href="{{ url_for('evaluaciones.rubrica_builder', actividad_id=act.id) }}" class="text-xs bg-indigo-50 border border-indigo-200 text-indigo-700 px-2 py-1 rounded-l hover:bg-indigo-100 transition shadow-sm flex gap-1 items-center font-bold">
-                                        <span>📋</span> {% if act.criterios %}Editar Rúbrica{% else %}Crear Rúbrica{% endif %}
-                                    </a>
-                                    {% if act.criterios %}
-                                    <a href="{{ url_for('reportes.reporte_rubrica', actividad_id=act.id) }}" class="text-xs bg-indigo-600 text-white px-2 py-1 rounded-r hover:bg-indigo-700 transition shadow-sm font-bold" title="Imprimir Rúbrica">
-                                        🖨️
-                                    </a>
-                                    {% endif %}
+                    <!-- Actividades (Accordion Content) -->
+                    <div id="periodo-content-{{ periodo.id }}" class="hidden">
+                        {% if periodo.actividades %}
+                        <ul class="divide-y divide-slate-100 bg-white">
+                            {% for act in periodo.actividades %}
+                            <li class="px-6 py-3 flex justify-between items-center group">
+                                <span class="text-slate-700 font-medium w-1/3">{{ act.nombre }}</span>
+                                <div class="flex gap-4 items-center">
+                                    <div class="flex gap-1 items-center">
+                                        <a href="{{ url_for('evaluaciones.rubrica_builder', actividad_id=act.id) }}" class="text-xs bg-indigo-50 border border-indigo-200 text-indigo-700 px-2 py-1 rounded-l hover:bg-indigo-100 transition shadow-sm flex gap-1 items-center font-bold">
+                                            <span>📋</span> {% if act.criterios %}Editar Rúbrica{% else %}Crear Rúbrica{% endif %}
+                                        </a>
+                                        {% if act.criterios %}
+                                        <a href="{{ url_for('reportes.reporte_rubrica', actividad_id=act.id) }}" class="text-xs bg-indigo-600 text-white px-2 py-1 rounded-r hover:bg-indigo-700 transition shadow-sm font-bold" title="Imprimir Rúbrica">
+                                            🖨️
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                    <span class="text-slate-800 font-bold bg-slate-100 px-3 py-1 rounded">{{ act.ponderacion }}%</span>
                                 </div>
-                                <span class="text-slate-800 font-bold bg-slate-100 px-3 py-1 rounded">{{ act.ponderacion }}%</span>
-                            </div>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                    {% else %}
-                    <div class="p-6 text-sm text-slate-500 italic text-center bg-white">
-                        <span class="block text-2xl mb-2">📊</span>
-                        Este periodo está vacío. Añade una columna evaluativa arriba.
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <div class="p-6 text-sm text-slate-500 italic text-center bg-white">
+                            <span class="block text-2xl mb-2">📊</span>
+                            Este periodo está vacío. Añade una columna evaluativa arriba.
+                        </div>
+                        {% endif %}
                     </div>
-                    {% endif %}
                 </div>
                 {% endfor %}
             </div>
@@ -134,4 +143,21 @@
         {% endif %}
     </div>
 </div>
+
+{% block scripts %}
+<script>
+function toggleAccordion(contentId, iconId) {
+    const content = document.getElementById(contentId);
+    const icon = document.getElementById(iconId);
+    
+    if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        icon.classList.add('rotate-180');
+    } else {
+        content.classList.add('hidden');
+        icon.classList.remove('rotate-180');
+    }
+}
+</script>
+{% endblock %}
 {% endblock %}
