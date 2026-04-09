@@ -39,9 +39,9 @@
         <thead>
             <tr class="bg-slate-900 text-white">
                 <th class="px-4 py-3 text-left text-xs font-black uppercase tracking-wider rounded-tl-lg">Asignatura</th>
-                <th class="px-4 py-3 text-center text-xs font-black uppercase tracking-wider">P1</th>
-                <th class="px-4 py-3 text-center text-xs font-black uppercase tracking-wider">P2</th>
-                <th class="px-4 py-3 text-center text-xs font-black uppercase tracking-wider">P3</th>
+                {% for i in range(max_periodos) %}
+                    <th class="px-4 py-3 text-center text-xs font-black uppercase tracking-wider">P{{ i + 1 }}</th>
+                {% endfor %}
                 <th class="px-4 py-3 text-center text-xs font-black uppercase tracking-wider rounded-tr-lg">Final</th>
             </tr>
         </thead>
@@ -57,12 +57,12 @@
                         {{ "%.1f"|format(p_data.final) }}
                     </td>
                 {% endfor %}
-                <!-- Espacios vacíos si hay menos de 3 periodos para mantener estructura -->
-                {% for _ in range(3 - item.detalle.periodos|length) %}
+                <!-- Espacios vacíos si esta materia tiene menos periodos que el máximo -->
+                {% for _ in range(max_periodos - item.detalle.periodos|length) %}
                     <td class="px-4 py-4 text-center font-medium text-slate-300">-</td>
                 {% endfor %}
                 <td class="px-4 py-4 text-center">
-                    <div class="px-2 py-1 rounded font-black text-sm {% if item.detalle.nota_final >= 6.0 %}text-emerald-700 bg-emerald-50{% else %}text-red-700 bg-red-50{% endif %}">
+                    <div class="px-2 py-1 rounded font-black text-sm {% if item.detalle.nota_final >= 6.0 %}text-emerald-700 bg-emerald-50 {% else %}text-red-700 bg-red-50{% endif %}">
                         {{ "%.2f"|format(item.detalle.nota_final) }}
                     </div>
                 </td>

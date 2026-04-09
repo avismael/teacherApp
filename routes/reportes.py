@@ -153,7 +153,11 @@ def reporte_estudiante(estudiante_id):
                     'detalle': datos_est
                 })
                 
-    return render_template('reportes/estudiante.html', estudiante=est, reporte=reporte_completo)
+    max_periodos = 0
+    if reporte_completo:
+        max_periodos = max(len(item['detalle']['periodos']) for item in reporte_completo)
+                
+    return render_template('reportes/estudiante.html', estudiante=est, reporte=reporte_completo, max_periodos=max_periodos)
 
 @reportes_bp.route('/exportar_excel/<int:asignatura_id>/<int:seccion_id>')
 def exportar_excel(asignatura_id, seccion_id):
