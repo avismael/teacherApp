@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Editar Sección - {{ seccion.nombre }}{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex gap-2 text-sm text-slate-500 font-medium">
+    <a href="{{ url_for('secciones.index') }}" class="hover:text-primary">Secciones</a> 
+    <span>/</span> 
+    <span class="text-slate-800">Editar: {{ seccion.nombre }}</span>
+</div>
+
+<div class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+    <h1 class="text-2xl font-bold text-slate-800 mb-6 font-primary text-secondary">Editar Grupo / Sección</h1>
+    
+    <form action="{{ url_for('secciones.editar', id=seccion.id) }}" method="POST" class="flex flex-col gap-6">
+        <div>
+            <label class="text-sm font-semibold text-slate-700 block mb-2 uppercase tracking-tight">Nombre del Grupo</label>
+            <input type="text" name="nombre" value="{{ seccion.nombre }}" class="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-medium text-lg" placeholder="Ej: 1° Año Secc 'A'" required>
+        </div>
+        
+        <div class="flex gap-4 pt-4">
+            <button type="submit" class="flex-1 bg-primary text-white font-bold py-3 px-6 rounded-xl hover:bg-primary-hover transition shadow-lg shadow-primary/20">Actualizar Nombre</button>
+            <a href="{{ url_for('secciones.index') }}" class="flex-1 bg-slate-100 text-slate-600 font-bold py-3 px-6 rounded-xl text-center hover:bg-slate-200 transition">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

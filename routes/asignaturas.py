@@ -28,6 +28,41 @@ def detalle(id):
     secciones_disponibles = Seccion.query.all()
     return render_template('asignaturas/detalle.html', asignatura=asignatura, secciones_disponibles=secciones_disponibles)
 
+@asignaturas_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
+def editar(id):
+    asignatura = Asignatura.query.get_or_404(id)
+    if request.method == 'POST':
+        nombre = request.form.get('nombre')
+        descr = request.form.get('descripcion')
+        if not nombre:
+            flash('El nombre es requerido', 'error')
+            return redirect(url_for('asignaturas.editar', id=id))
+        
+        asignatura.nombre = nombre
+        asignatura.descripcion = descr
+        db.session.commit()
+        flash('Asignatura actualizada', 'success')
+        return redirect(url_for('asignaturas.index'))
+        
+    return render_template('asignaturas/editar.html', asignatura=asignatura)
+
+@asignaturas_bp.route('/eliminar/<int:id>', methods=['POST'])
+def eliminar(id):
+    asignatura = Asignatura.query.get_or_404(id)
+    from models import Nota, Actividad, Periodo
+    
+    # Restricción: No eliminar si hay notas registradas
+    tiene_notas = db.session.query(Nota).join(Actividad).join(Periodo).filter(Periodo.asignatura_id == id).first()
+    
+    if tiene_notas:
+        flash('No se puede eliminar la asignatura porque ya tiene registros de notas. Borra las notas primero.', 'error')
+        return redirect(url_for('asignaturas.index'))
+        
+    db.session.delete(asignatura)
+    db.session.commit()
+    flash('Asignatura eliminada correctamente', 'success')
+    return redirect(url_for('asignaturas.index'))
+
 @asignaturas_bp.route('/<int:asignatura_id>/matricular_seccion', methods=['POST'])
 def matricular_seccion(asignatura_id):
     asignatura = Asignatura.query.get_or_404(asignatura_id)

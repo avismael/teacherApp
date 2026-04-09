@@ -29,6 +29,40 @@ def detalle(id):
     estudiantes_totales = Estudiante.query.order_by(Estudiante.apellidos).all()
     return render_template('secciones/detalle.html', seccion=seccion, estudiantes_totales=estudiantes_totales)
 
+@secciones_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
+def editar(id):
+    seccion = Seccion.query.get_or_404(id)
+    if request.method == 'POST':
+        nombre = request.form.get('nombre')
+        if not nombre:
+            flash('El nombre es requerido', 'error')
+            return redirect(url_for('secciones.editar', id=id))
+            
+        seccion.nombre = nombre
+        db.session.commit()
+        flash('Sección actualizada', 'success')
+        return redirect(url_for('secciones.index'))
+        
+    return render_template('secciones/editar.html', seccion=seccion)
+
+@secciones_bp.route('/eliminar/<int:id>', methods=['POST'])
+def eliminar(id):
+    seccion = Seccion.query.get_or_404(id)
+    
+    # Restricciones de integridad
+    if seccion.estudiantes:
+        flash('No se puede eliminar la sección porque tiene alumnos matriculados. Desvincula a los alumnos primero.', 'error')
+        return redirect(url_for('secciones.index'))
+        
+    if seccion.asignaturas:
+        flash('No se puede eliminar la sección porque está vinculada a asignaturas activas.', 'error')
+        return redirect(url_for('secciones.index'))
+        
+    db.session.delete(seccion)
+    db.session.commit()
+    flash('Sección eliminada correctamente', 'success')
+    return redirect(url_for('secciones.index'))
+
 @secciones_bp.route('/<int:seccion_id>/crear_matricular', methods=['POST'])
 def crear_y_matricular(seccion_id):
     seccion = Seccion.query.get_or_404(seccion_id)
