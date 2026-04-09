@@ -323,3 +323,20 @@ def exportar_consolidado_excel(seccion_id):
                      download_name=filename, 
                      as_attachment=True, 
                      mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+@reportes_bp.route('/planificacion/<int:periodo_id>')
+def reporte_planificacion(periodo_id):
+    periodo = Periodo.query.get_or_404(periodo_id)
+    asignatura = periodo.asignatura
+    from datetime import datetime
+    now = datetime.now().strftime("%d/%m/%Y %H:%M")
+    return render_template('reportes/planificacion.html', periodo=periodo, asignatura=asignatura, now=now)
+
+@reportes_bp.route('/rubrica/<int:actividad_id>')
+def reporte_rubrica(actividad_id):
+    actividad = Actividad.query.get_or_404(actividad_id)
+    periodo = actividad.periodo
+    asignatura = periodo.asignatura
+    from datetime import datetime
+    now = datetime.now().strftime("%d/%m/%Y %H:%M")
+    return render_template('reportes/rubrica_print.html', actividad=actividad, periodo=periodo, asignatura=asignatura, now=now)

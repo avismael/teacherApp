@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% block title %}Planificación Pedagógica - {{ periodo.nombre }}{% endblock %}
+
+{% block content %}
+<div class="no-print mb-6 flex justify-between items-center">
+    <a href="{{ url_for('asignaturas.detalle', id=asignatura.id) }}" class="text-slate-500 hover:text-slate-800 transition flex items-center gap-2">
+        <span>←</span> Volver a la Asignatura
+    </a>
+    <button onclick="window.print()" class="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-indigo-700 shadow-md transition flex items-center gap-2">
+        <span>🖨️</span> Imprimir Planificación
+    </button>
+</div>
+
+<div class="bg-white p-12 rounded-2xl shadow-sm border border-slate-100 print:shadow-none print:border-none print:p-0">
+    
+    <!-- Encabezado Institucional -->
+    <div class="flex justify-between items-start mb-10 border-b-2 border-slate-800 pb-8">
+        <div class="flex items-center gap-6">
+            <img src="{{ url_for('static', filename='img/monograma.png') }}" class="w-20 h-20 object-contain" alt="Monograma">
+            <div>
+                <h1 class="text-2xl font-black text-slate-900 uppercase">Instituto Nacional de Santa Elena</h1>
+                <p class="text-slate-500 font-bold tracking-widest uppercase">Planificación de Periodo Académico</p>
+                <div class="mt-2 text-sm">
+                    <span class="bg-slate-900 text-white px-2 py-0.5 rounded font-bold mr-2 text-xs">AÑO LECTIVO 2026</span>
+                </div>
+            </div>
+        </div>
+        <div class="text-right">
+            <div class="font-bold text-slate-800">TeacherApp PDF Engine</div>
+            <p class="text-xs text-slate-500">Generado: {{ now }}</p>
+        </div>
+    </div>
+
+    <!-- Información General -->
+    <div class="grid grid-cols-2 gap-8 mb-10">
+        <div class="space-y-2">
+            <div>
+                <label class="text-[10px] uppercase font-black text-slate-400">Asignatura</label>
+                <div class="text-lg font-bold text-slate-800">{{ asignatura.nombre }}</div>
+            </div>
+            <div>
+                <label class="text-[10px] uppercase font-black text-slate-400">Periodo Correspondiente</label>
+                <div class="text-lg font-bold text-indigo-700">{{ periodo.nombre }}</div>
+            </div>
+        </div>
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <label class="text-[10px] uppercase font-black text-slate-400">Descripción de la Cátedra</label>
+            <p class="text-sm text-slate-600 italic">
+                {{ asignatura.descripcion or 'Sin descripción registrada' }}
+            </p>
+        </div>
+    </div>
+
+    <!-- Estructura de Evaluación -->
+    <div class="mb-12">
+        <h2 class="text-lg font-black text-slate-900 uppercase mb-4 flex items-center gap-2">
+            <span class="w-2 h-6 bg-indigo-600 rounded-full"></span>
+            Estructura de Evaluación y Ponderaciones
+        </h2>
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="bg-slate-100">
+                    <th class="border border-slate-300 px-4 py-3 text-left text-xs font-black uppercase text-slate-700">N°</th>
+                    <th class="border border-slate-300 px-4 py-3 text-left text-xs font-black uppercase text-slate-700">Actividad Evaluativa</th>
+                    <th class="border border-slate-300 px-4 py-3 text-center text-xs font-black uppercase text-slate-700">Ponderación (%)</th>
+                    <th class="border border-slate-300 px-4 py-3 text-center text-xs font-black uppercase text-slate-700">Herramienta</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for act in periodo.actividades %}
+                <tr>
+                    <td class="border border-slate-300 px-4 py-3 text-sm text-center text-slate-500">{{ loop.index }}</td>
+                    <td class="border border-slate-300 px-4 py-3 text-sm font-bold text-slate-800">{{ act.nombre }}</td>
+                    <td class="border border-slate-300 px-4 py-3 text-sm text-center font-black text-indigo-700">{{ act.ponderacion }}%</td>
+                    <td class="border border-slate-300 px-4 py-3 text-center text-xs text-slate-500">
+                        {% if act.criterios %} Rúbrica de Desempeño {% else %} Calificación Directa {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr class="bg-slate-50">
+                    <td colspan="2" class="border border-slate-300 px-4 py-3 text-right font-black uppercase text-xs">Total del Periodo:</td>
+                    {% set total = periodo.actividades | map(attribute='ponderacion') | sum %}
+                    <td class="border border-slate-300 px-4 py-3 text-center font-black text-lg {% if total == 100 %}text-emerald-700{% else %}text-amber-700{% endif %}">
+                        {{ total }}%
+                    </td>
+                    <td class="border border-slate-300 bg-slate-100"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Firma de Responsabilidad (Solo Impresión) -->
+    <div class="hidden print:block mt-24">
+        <div class="grid grid-cols-2 gap-20">
+            <div class="text-center">
+                <div class="border-t-2 border-slate-900 pt-3 font-black text-slate-900 uppercase text-xs">Firma del Docente</div>
+                <div class="text-[9px] text-slate-500 italic">Responsable de Planificación</div>
+            </div>
+            <div class="text-center">
+                <div class="border-t-2 border-slate-900 pt-3 font-black text-slate-900 uppercase text-xs">Coordinación Académica</div>
+                <div class="text-[9px] text-slate-500 italic">Validación Institucional</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+@media print {
+    aside { display: none !important; }
+    header { display: none !important; }
+    main { padding: 0 !important; width: 100% !important; margin: 0 !important; }
+    .no-print { display: none !important; }
+    .flex-1 { overflow: visible !important; }
+    body { background: white !important; padding: 1.5cm !important; }
+}
+</style>
+{% endblock %}

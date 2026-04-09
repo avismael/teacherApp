@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block title %}Matriz de Rúbrica - {{ actividad.nombre }}{% endblock %}
+
+{% block content %}
+<div class="no-print mb-6 flex justify-between items-center">
+    <a href="{{ url_for('asignaturas.detalle', id=periodo.asignatura.id) }}" class="text-slate-500 hover:text-slate-800 transition flex items-center gap-2">
+        <span>←</span> Volver a la Asignatura
+    </a>
+    <button onclick="window.print()" class="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-indigo-700 shadow-md transition flex items-center gap-2">
+        <span>🖨️</span> Imprimir Rúbrica
+    </button>
+</div>
+
+<div class="bg-white p-12 rounded-2xl shadow-sm border border-slate-100 print:shadow-none print:border-none print:p-0">
+    
+    <!-- Encabezado Institucional -->
+    <div class="flex justify-between items-start mb-8 border-b-2 border-slate-800 pb-6">
+        <div class="flex items-center gap-4">
+            <img src="{{ url_for('static', filename='img/monograma.png') }}" class="w-16 h-16 object-contain" alt="Monograma">
+            <div>
+                <h1 class="text-xl font-black text-slate-900 uppercase">Instituto Nacional de Santa Elena</h1>
+                <p class="text-xs text-slate-500 font-bold uppercase tracking-widest">Instrumento de Evaluación: Rúbrica Analítica</p>
+            </div>
+        </div>
+        <div class="text-right text-[10px] text-slate-400 font-bold">
+            TEACHERAPP EDUCATIONAL SYSTEM<br>
+            {{ now }}
+        </div>
+    </div>
+
+    <!-- Info de la Actividad -->
+    <div class="bg-slate-900 text-white p-6 rounded-xl mb-10 flex justify-between items-center print:rounded-none">
+        <div>
+            <label class="text-[9px] uppercase font-black text-slate-400 block mb-1">Actividad Evaluativa</label>
+            <div class="text-xl font-black">{{ actividad.nombre }}</div>
+            <div class="text-xs text-indigo-300 font-bold mt-1">{{ asignatura.nombre }} — {{ periodo.nombre }}</div>
+        </div>
+        <div class="text-right">
+            <label class="text-[9px] uppercase font-black text-slate-400 block mb-1">Ponderación Final</label>
+            <div class="text-3xl font-black text-white">{{ actividad.ponderacion }}%</div>
+        </div>
+    </div>
+
+    <!-- Matriz de Rúbrica -->
+    <div class="mb-12">
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="bg-slate-100">
+                    <th class="border border-slate-300 p-4 text-left text-xs font-black uppercase text-slate-700 w-1/4">Criterios de Evaluación</th>
+                    <!-- Cabeceras de Niveles Dinámicas (Asumiendo que todos los criterios tienen los mismos niveles o usamos los del primero para la cabecera) -->
+                    {% set primer_crit = actividad.criterios[0] if actividad.criterios else None %}
+                    {% if primer_crit %}
+                        {% for niv in primer_crit.niveles %}
+                            <th class="border border-slate-300 p-4 text-center text-[10px] font-black uppercase text-slate-700">
+                                {{ niv.nombre }}<br>
+                                <span class="text-slate-400">({{ niv.puntaje }} pts)</span>
+                            </th>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for crit in actividad.criterios %}
+                <tr>
+                    <td class="border border-slate-300 p-4 align-top">
+                        <div class="font-bold text-slate-800 text-sm">{{ crit.nombre }}</div>
+                    </td>
+                    {% for niv in crit.niveles %}
+                    <td class="border border-slate-300 p-4 text-[10px] leading-tight text-slate-600 align-top italic">
+                        {{ niv.descripcion }}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Notas Adicionales -->
+    <div class="mt-8 border-t border-slate-200 pt-6">
+        <div class="text-[10px] font-black text-slate-400 uppercase mb-4">Instrucciones para la Evaluación</div>
+        <p class="text-xs text-slate-600 leading-relaxed mb-10">
+            Para cada criterio, se selecciona el nivel de desempeño que mejor describa el trabajo del estudiante. La nota resultante será la sumatoria de los puntajes obtenidos en cada fila.
+        </p>
+    </div>
+
+    <!-- Firmas -->
+    <div class="hidden print:block mt-16 px-10">
+        <div class="flex justify-between items-center">
+            <div class="text-center w-64 border-t border-slate-900 pt-2 font-black text-slate-900 uppercase text-[9px]">Elaborado por Docente</div>
+            <div class="text-center w-64 border-t border-slate-900 pt-2 font-black text-slate-900 uppercase text-[9px]">Fecha de Aplicación</div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+@media print {
+    aside { display: none !important; }
+    header { display: none !important; }
+    main { padding: 0 !important; width: 100% !important; margin: 0 !important; }
+    .no-print { display: none !important; }
+    body { background: white !important; padding: 1cm !important; }
+    table { page-break-inside: auto; }
+}
+</style>
+{% endblock %}
