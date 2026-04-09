@@ -246,3 +246,94 @@ def exportar_excel(asignatura_id, seccion_id):
                      download_name=filename, 
                      as_attachment=True, 
                      mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+@reportes_bp.route('/exportar_consolidado_excel/<int:seccion_id>')
+def exportar_consolidado_excel(seccion_id):
+    seccion = Seccion.query.get_or_404(seccion_id)
+    estudiantes = seccion.estudiantes
+    asignaturas = seccion.asignaturas
+    
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Consolidado de Sección"
+    
+    # Estilos
+    font_bold = Font(bold=True)
+    font_header = Font(bold=True, color="FFFFFF", size=10)
+    fill_header = PatternFill(start_color="1E293B", end_color="1E293B", fill_type="solid")
+    align_center = Alignment(horizontal="center", vertical="center")
+    border_thin = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+    
+    # Encabezado Institucional
+    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(asignaturas) + 3)
+    ws['A1'] = "INSTITUTO NACIONAL DE SANTA ELENA"
+    ws['A1'].font = Font(bold=True, size=16)
+    ws['A1'].alignment = align_center
+    
+    ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=len(asignaturas) + 3)
+    ws['A2'] = f"REPORTE CONSOLIDADO: {seccion.nombre}"
+    ws['A2'].font = Font(bold=True, size=12)
+    ws['A2'].alignment = align_center
+
+    # Encabezados de Tabla
+    headers = ["N°", "Estudiante (Apellidos, Nombres)"]
+    for asig in asignaturas:
+        headers.append(asig.nombre)
+    headers.append("PROM. GRAL")
+    
+    for col_num, header in enumerate(headers, 1):
+        cell = ws.cell(row=4, column=col_num)
+        cell.value = header
+        cell.font = font_header
+        cell.fill = fill_header
+        cell.alignment = align_center
+        cell.border = border_thin
+
+    # Matriz de Datos
+    for row_idx, est in enumerate(estudiantes, 5):
+        ws.cell(row=row_idx, column=1, value=row_idx-4).border = border_thin
+        ws.cell(row=row_idx, column=2, value=f"{est.apellidos}, {est.nombres}").border = border_thin
+        
+        suma_promedios = 0
+        materias_contadas = 0
+        
+        for col_idx, asig in enumerate(asignaturas, 3):
+            # Calcular nota final de esta materia para este estudiante
+            data_res = calcular_resumen_asignatura(asig, seccion)
+            # Buscar al estudiante en el resumen
+            est_data = next((f for f in data_res if f['estudiante'].id == est.id), None)
+            
+            nota = est_data['nota_final'] if est_data else 0
+            cell_n = ws.cell(row=row_idx, column=col_idx, value=round(nota, 2))
+            cell_n.border = border_thin
+            cell_n.alignment = align_center
+            
+            if nota < 6.0:
+                cell_n.font = Font(color="FF0000")
+            
+            suma_promedios += nota
+            materias_contadas += 1
+            
+        # Promedio General
+        prom_gral = suma_promedios / materias_contadas if materias_contadas > 0 else 0
+        cell_avg = ws.cell(row=row_idx, column=len(asignaturas) + 3, value=round(prom_gral, 2))
+        cell_avg.border = border_thin
+        cell_avg.font = font_bold
+        cell_avg.alignment = align_center
+        
+    # Ajustar dimensiones
+    ws.column_dimensions['A'].width = 5
+    ws.column_dimensions['B'].width = 40
+    for col_idx in range(3, len(asignaturas) + 4):
+        ws.column_dimensions[ws.cell(row=4, column=col_idx).column_letter].width = 15
+
+    # Guardar y enviar
+    output = io.BytesIO()
+    wb.save(output)
+    output.seek(0)
+    
+    filename = f"Consolidado_{seccion.nombre}.xlsx".replace(" ", "_")
+    return send_file(output, 
+                     download_name=filename, 
+                     as_attachment=True, 
+                     mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')

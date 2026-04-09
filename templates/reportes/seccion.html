@@ -6,9 +6,14 @@
     <a href="{{ url_for('reportes.index') }}" class="text-slate-500 hover:text-slate-800 transition flex items-center gap-2">
         <span>←</span> Volver al Centro de Reportes
     </a>
-    <button onclick="window.print()" class="bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-emerald-700 shadow-md transition flex items-center gap-2">
-        <span>🖨️</span> Imprimir Consolidado
-    </button>
+    <div class="flex gap-3">
+        <a href="{{ url_for('reportes.exportar_consolidado_excel', seccion_id=seccion.id) }}" class="bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-emerald-700 shadow-md transition flex items-center gap-2">
+            <span>📊</span> Exportar Excel
+        </a>
+        <button onclick="window.print()" class="bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-emerald-700 shadow-md transition flex items-center gap-2">
+            <span>🖨️</span> Imprimir Consolidado
+        </button>
+    </div>
 </div>
 
 <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 print:shadow-none print:border-none print:p-0">
