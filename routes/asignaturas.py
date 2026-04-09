@@ -76,3 +76,27 @@ def matricular_seccion(asignatura_id):
         else:
             flash('La sección no existe o ya está matriculada', 'error')
     return redirect(url_for('asignaturas.detalle', id=asignatura.id))
+
+@asignaturas_bp.route('/<int:asignatura_id>/desvincular/<int:seccion_id>', methods=['POST'])
+def desvincular_seccion(asignatura_id, seccion_id):
+    asignatura = Asignatura.query.get_or_404(asignatura_id)
+    seccion = Seccion.query.get_or_404(seccion_id)
+    from models import Nota, Actividad, Periodo, Estudiante
+    
+    # Restricción: No desvincular si hay notas registradas para estudiantes de ESTA sección en ESTA materia
+    estudiantes_ids = [e.id for e in seccion.estudiantes]
+    tiene_notas = db.session.query(Nota).join(Actividad).join(Periodo)\
+        .filter(Periodo.asignatura_id == asignatura_id)\
+        .filter(Nota.estudiante_id.in_(estudiantes_ids))\
+        .first()
+        
+    if tiene_notas:
+        flash(f'No se puede desvincular la sección {seccion.nombre} porque ya existen registros de notas para sus estudiantes en esta materia. Borra las notas primero.', 'error')
+        return redirect(url_for('asignaturas.detalle', id=asignatura_id))
+    
+    if seccion in asignatura.secciones:
+        asignatura.secciones.remove(seccion)
+        db.session.commit()
+        flash(f'Sección {seccion.nombre} desvinculada exitosamente.', 'success')
+    
+    return redirect(url_for('asignaturas.detalle', id=asignatura_id))
