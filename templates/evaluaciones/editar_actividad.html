@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Editar Actividad - {{ actividad.nombre }}{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex gap-2 text-sm text-slate-500 font-medium">
+    <a href="{{ url_for('asignaturas.detalle', id=actividad.periodo.asignatura_id) }}" class="hover:text-primary">{{ actividad.periodo.asignatura.nombre }}</a> 
+    <span>/</span> 
+    <span class="text-slate-800">Editar Actividad: {{ actividad.nombre }}</span>
+</div>
+
+<div class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+    <h1 class="text-2xl font-bold text-slate-800 mb-6">Configuración de Actividad</h1>
+    
+    <div class="mb-6 bg-amber-50 border border-amber-200 p-4 rounded-xl text-amber-800 text-sm flex gap-3">
+        <span class="text-lg">ℹ️</span>
+        <p>Asegúrate de que la suma de ponderaciones de este periodo (<b>{{ actividad.periodo.nombre }}</b>) no exceda el 100%.</p>
+    </div>
+
+    <form action="{{ url_for('evaluaciones.editar_actividad', actividad_id=actividad.id) }}" method="POST" class="flex flex-col gap-6">
+        <div>
+            <label class="text-sm font-semibold text-slate-700 block mb-2 uppercase tracking-tight">Nombre de la Actividad</label>
+            <input type="text" name="nombre" value="{{ actividad.nombre }}" class="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-medium text-lg" placeholder="Ej: Examen Final" required>
+        </div>
+
+        <div>
+            <label class="text-sm font-semibold text-slate-700 block mb-2 uppercase tracking-tight">Peso en el Periodo (%)</label>
+            <div class="relative">
+                <input type="number" step="0.01" name="ponderacion" value="{{ actividad.ponderacion }}" class="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-medium text-lg" placeholder="20" required>
+                <span class="absolute right-4 top-3 text-slate-400 font-bold text-xl">%</span>
+            </div>
+        </div>
+        
+        <div class="flex gap-4 pt-4">
+            <button type="submit" class="flex-1 bg-primary text-white font-bold py-3 px-6 rounded-xl hover:bg-primary-hover transition shadow-lg shadow-primary/20">Actualizar Actividad</button>
+            <a href="{{ url_for('asignaturas.detalle', id=actividad.periodo.asignatura_id) }}" class="flex-1 bg-slate-100 text-slate-600 font-bold py-3 px-6 rounded-xl text-center hover:bg-slate-200 transition">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -126,3 +126,59 @@ def importar_rubrica_csv(actividad_id):
     db.session.commit()
     flash('Rúbrica importada exitosamente desde CSV', 'success')
     return redirect(url_for('evaluaciones.rubrica_builder', actividad_id=actividad.id))
+@evaluaciones_bp.route('/periodo/<int:periodo_id>/editar', methods=['GET', 'POST'])
+def editar_periodo(periodo_id):
+    periodo = Periodo.query.get_or_404(periodo_id)
+    if request.method == 'POST':
+        nombre = request.form.get('nombre')
+        if nombre:
+            periodo.nombre = nombre
+            db.session.commit()
+            flash('Periodo actualizado', 'success')
+            return redirect(url_for('asignaturas.detalle', id=periodo.asignatura_id))
+    return render_template('evaluaciones/editar_periodo.html', periodo=periodo)
+
+@evaluaciones_bp.route('/periodo/<int:periodo_id>/eliminar', methods=['POST'])
+def eliminar_periodo(periodo_id):
+    periodo = Periodo.query.get_or_404(periodo_id)
+    asignatura_id = periodo.asignatura_id
+    db.session.delete(periodo)
+    db.session.commit()
+    flash('Periodo eliminado (incluyendo todas sus actividades y notas)', 'success')
+    return redirect(url_for('asignaturas.detalle', id=asignatura_id))
+
+@evaluaciones_bp.route('/actividad/<int:actividad_id>/editar', methods=['GET', 'POST'])
+def editar_actividad(actividad_id):
+    act = Actividad.query.get_or_404(actividad_id)
+    periodo = act.periodo
+    if request.method == 'POST':
+        nombre = request.form.get('nombre')
+        ponderacion = request.form.get('ponderacion', type=float)
+        
+        if not nombre or ponderacion is None:
+            flash('Faltan datos para actualizar la actividad', 'error')
+            return redirect(url_for('evaluaciones.editar_actividad', actividad_id=act.id))
+            
+        # Validar suma de ponderaciones
+        otras_actividades = [a for a in periodo.actividades if a.id != act.id]
+        suma_actual = sum(a.ponderacion for a in otras_actividades)
+        
+        if suma_actual + ponderacion > 100.0:
+            flash(f'Error: La suma ({suma_actual + ponderacion}%) excedería el 100% para este periodo.', 'error')
+        else:
+            act.nombre = nombre
+            act.ponderacion = ponderacion
+            db.session.commit()
+            flash('Actividad actualizada', 'success')
+            return redirect(url_for('asignaturas.detalle', id=periodo.asignatura_id))
+            
+    return render_template('evaluaciones/editar_actividad.html', actividad=act)
+
+@evaluaciones_bp.route('/actividad/<int:actividad_id>/eliminar', methods=['POST'])
+def eliminar_actividad(actividad_id):
+    act = Actividad.query.get_or_404(actividad_id)
+    asignatura_id = act.periodo.asignatura_id
+    db.session.delete(act)
+    db.session.commit()
+    flash('Actividad evaluativa eliminada correctamente (y sus notas asociadas)', 'success')
+    return redirect(url_for('asignaturas.detalle', id=asignatura_id))
