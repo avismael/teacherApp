@@ -12,26 +12,9 @@
     <link rel="manifest" href="{{ url_for('static', filename='img/favicon/site.webmanifest') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon/favicon.ico') }}">
     
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS V4 CDN -->
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-    
-    <!-- Custom CSS -->
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    
-    <style type="text/tailwindcss">
-        @theme {
-            --font-sans: "Inter", sans-serif;
-            --color-primary: #4F46E5;
-            --color-primary-hover: #4338CA;
-            --color-secondary: #0F172A;
-            --color-accent: #38BDF8;
-        }
-    </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex">
 
