@@ -38,17 +38,11 @@
         <table class="w-full text-left border-collapse border border-slate-300">
             <thead class="bg-slate-100">
                 <tr>
-                    <th rowspan="2" class="border border-slate-300 px-4 py-3 text-sm font-bold text-slate-700 uppercase">Estudiante (Apellidos, Nombres)</th>
+                    <th class="border border-slate-300 px-4 py-4 text-sm font-black text-slate-700 uppercase">Estudiante (Apellidos, Nombres)</th>
                     {% for p in asignatura.periodos %}
-                        <th colspan="2" class="border border-slate-300 px-2 py-3 text-center text-xs font-bold text-slate-700 uppercase bg-indigo-50">{{ p.nombre }}</th>
+                        <th class="border border-slate-300 px-2 py-4 text-center text-xs font-black text-indigo-700 uppercase bg-indigo-50">{{ p.nombre }}</th>
                     {% endfor %}
-                    <th rowspan="2" class="border border-slate-300 px-4 py-3 text-center text-sm font-bold text-white bg-slate-800 uppercase">Final</th>
-                </tr>
-                <tr class="bg-slate-50">
-                    {% for p in asignatura.periodos %}
-                        <th class="border border-slate-300 px-2 py-2 text-center text-[10px] font-semibold text-slate-500 uppercase">Raw</th>
-                        <th class="border border-slate-300 px-2 py-2 text-center text-[10px] font-semibold text-indigo-700 uppercase">Final (Rec)</th>
-                    {% endfor %}
+                    <th class="border border-slate-300 px-4 py-4 text-center text-sm font-black text-white bg-slate-800 uppercase">Final Ciclo</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-200">
@@ -59,14 +53,11 @@
                         <div class="text-[9px] text-slate-400 font-normal">NIE: {{ fila.estudiante.nie }}</div>
                     </td>
                     {% for p_data in fila.periodos %}
-                        <td class="border border-slate-300 px-2 py-3 text-center text-xs text-slate-500">
-                            {{ "%.2f"|format(p_data.raw) }}
-                        </td>
-                        <td class="border border-slate-300 px-2 py-3 text-center text-xs font-bold {% if p_data.final >= 6.0 %}text-emerald-700 bg-emerald-50/30{% else %}text-red-700 bg-red-50/30{% endif %}">
+                        <td class="border border-slate-300 px-2 py-3 text-center text-xs font-bold {% if p_data.final >= 6.0 %}text-emerald-700 bg-emerald-50/10{% else %}text-red-700 bg-red-50/10{% endif %}">
                             {{ "%.2f"|format(p_data.final) }}
                         </td>
                     {% endfor %}
-                    <td class="border border-slate-300 px-4 py-3 text-center text-lg font-black {% if fila.nota_final >= 6.0 %}text-emerald-700{% else %}text-red-700{% endif %}">
+                    <td class="border border-slate-300 px-4 py-3 text-center text-lg font-black {% if fila.nota_final >= 6.0 %}text-emerald-700 bg-emerald-100/20{% else %}text-red-700 bg-red-100/20{% endif %}">
                         {{ "%.2f"|format(fila.nota_final) }}
                     </td>
                 </tr>
