@@ -3,7 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Registro de Notas{% endblock %}</title>
+    <title>{% block title %}TeacherApp{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='img/favicon/site.webmanifest') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon/favicon.ico') }}">
     
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,7 +38,7 @@
     <!-- Sidebar Navigation -->
     <aside class="w-64 bg-secondary text-white hidden md:flex flex-col shadow-lg transition-all duration-300">
         <div class="h-16 flex items-center px-6 font-bold text-xl tracking-tight border-b border-slate-700/50">
-            <span class="text-accent mr-2">📚</span> EduNotas
+            <span class="text-accent mr-2">👨‍🏫</span> TeacherApp
         </div>
         <nav class="flex-1 py-6 flex flex-col gap-2 px-4">
             <a href="{{ url_for('dashboard.index') }}" class="px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if request.endpoint == 'dashboard.index' %}bg-primary hover:bg-primary{% endif %}">
@@ -60,7 +67,7 @@
         
         <!-- Top header for mobile -->
         <header class="md:hidden h-16 bg-white shadow-sm flex items-center justify-between px-4">
-            <div class="font-bold text-lg text-slate-800"><span class="text-primary mr-2">📚</span> EduNotas</div>
+            <div class="font-bold text-lg text-slate-800"><span class="text-primary mr-2">👨‍🏫</span> TeacherApp</div>
             <button id="mobile-menu-btn" class="text-slate-500 hover:text-slate-700">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
