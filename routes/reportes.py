@@ -1,6 +1,9 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, send_file
 from models import Asignatura, Seccion, Estudiante, Periodo, Nota, Actividad, NotaRecuperacion
 from extensions import db
+import io
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 
 reportes_bp = Blueprint('reportes', __name__)
 
@@ -151,3 +154,95 @@ def reporte_estudiante(estudiante_id):
                 })
                 
     return render_template('reportes/estudiante.html', estudiante=est, reporte=reporte_completo)
+
+@reportes_bp.route('/exportar_excel/<int:asignatura_id>/<int:seccion_id>')
+def exportar_excel(asignatura_id, seccion_id):
+    asignatura = Asignatura.query.get_or_404(asignatura_id)
+    seccion = Seccion.query.get_or_404(seccion_id)
+    resumen = calcular_resumen_asignatura(asignatura, seccion)
+    
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Cuadro de Calificaciones"
+    
+    # Estilos
+    font_bold = Font(bold=True)
+    font_header = Font(bold=True, color="FFFFFF", size=12)
+    fill_header = PatternFill(start_color="4F46E5", end_color="4F46E5", fill_type="solid")
+    fill_subheader = PatternFill(start_color="F1F5F9", end_color="F1F5F9", fill_type="solid")
+    align_center = Alignment(horizontal="center", vertical="center")
+    border_thin = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+    
+    # Encabezado Institucional
+    ws.merge_cells('A1:L1')
+    ws['A1'] = "INSTITUTO NACIONAL DE SANTA ELENA"
+    ws['A1'].font = Font(bold=True, size=16)
+    ws['A1'].alignment = align_center
+    
+    ws.merge_cells('A2:L2')
+    ws['A2'] = f"CUADRO DE CALIFICACIONES: {asignatura.nombre} - SECCIÓN: {seccion.nombre}"
+    ws['A2'].font = Font(bold=True, size=12)
+    ws['A2'].alignment = align_center
+    
+    # Fila de Encabezados de Tabla
+    headers = ["NIE", "Apellidos y Nombres"]
+    # Agregar periodos a los headers
+    for p in asignatura.periodos:
+        headers.append(f"{p.nombre} (P.)")
+    headers.append("NOTA FINAL")
+    headers.append("ESTADO")
+    
+    for col_num, header in enumerate(headers, 1):
+        cell = ws.cell(row=4, column=col_num)
+        cell.value = header
+        cell.font = font_header
+        cell.fill = fill_header
+        cell.alignment = align_center
+        cell.border = border_thin
+
+    # Llenado de Datos
+    for row_num, fila in enumerate(resumen, 5):
+        ws.cell(row=row_num, column=1, value=fila['estudiante'].nie).border = border_thin
+        ws.cell(row=row_num, column=2, value=f"{fila['estudiante'].apellidos}, {fila['estudiante'].nombres}").border = border_thin
+        
+        col_idx = 3
+        for p_data in fila['periodos']:
+            cell_p = ws.cell(row=row_num, column=col_idx, value=round(p_data['final'], 2))
+            cell_p.border = border_thin
+            cell_p.alignment = align_center
+            col_idx += 1
+            
+        # Nota Final
+        cell_final = ws.cell(row=row_num, column=col_idx, value=round(fila['nota_final'], 2))
+        cell_final.border = border_thin
+        cell_final.font = font_bold
+        cell_final.alignment = align_center
+        col_idx += 1
+        
+        # Estado
+        estado = "APROBADO" if fila['nota_final'] >= 6.0 else "REPROBADO"
+        cell_estado = ws.cell(row=row_num, column=col_idx, value=estado)
+        cell_estado.border = border_thin
+        cell_estado.alignment = align_center
+        if estado == "REPROBADO":
+            cell_estado.font = Font(color="FF0000", bold=True)
+        else:
+            cell_estado.font = Font(color="008000", bold=True)
+
+    # Ajustar anchos de columnas
+    ws.column_dimensions['A'].width = 15
+    ws.column_dimensions['B'].width = 40
+    for col_char in ['C', 'D', 'E', 'F', 'G']:
+        ws.column_dimensions[col_char].width = 15
+
+    # Guardar en memoria
+    output = io.BytesIO()
+    wb.save(output)
+    output.seek(0)
+    
+    filename = f"Notas_{asignatura.nombre}_{seccion.nombre}.xlsx".replace(" ", "_")
+    
+    return send_file(output, 
+                     download_name=filename, 
+                     as_attachment=True, 
+                     mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')

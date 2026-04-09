@@ -16,9 +16,14 @@
             <h1 class="text-3xl font-bold text-slate-800">Calificaciones: {{ seccion.nombre }}</h1>
             <p class="text-slate-500">Materia: {{ asignatura.nombre }}. Las columnas de evaluación provienen de la configuración de la materia.</p>
         </div>
-        <a href="{{ url_for('secciones.detalle', id=seccion.id) }}" class="text-sm text-primary hover:underline mt-4 md:mt-0 font-medium py-2 px-4 border border-primary/20 rounded bg-primary/5">
-            👥 Administrar Alumnos del Grupo
-        </a>
+        <div class="flex gap-2 mt-4 md:mt-0">
+            <a href="{{ url_for('reportes.exportar_excel', asignatura_id=asignatura.id, seccion_id=seccion.id) }}" class="text-sm bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-700 transition shadow-sm flex items-center gap-2">
+                <span>📊</span> Exportar Excel
+            </a>
+            <a href="{{ url_for('secciones.detalle', id=seccion.id) }}" class="text-sm text-primary hover:underline font-medium py-2 px-4 border border-primary/20 rounded-lg bg-primary/5">
+                👥 Administrar Alumnos del Grupo
+            </a>
+        </div>
     </div>
 </div>
 
