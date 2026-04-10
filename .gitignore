@@ -15,3 +15,6 @@ pip-delete-this-directory.txt
 .vscode/
 .idea/
 *.csv
+node_modules/
+registro_notas.bat
+registro_notas.vbs
