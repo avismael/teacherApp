@@ -86,6 +86,38 @@ La aplicación estará disponible en `http://localhost:5000`.
 
 ---
 
+## 📥 Estructuras de Importación (CSV)
+
+Para asegurar una importación masiva correcta, los archivos CSV deben seguir las estructuras detalladas a continuación. Se recomienda usar codificación **UTF-8**.
+
+### 1. Importación de Estudiantes
+Se utiliza en el módulo de Estudiantes para registrar alumnos de forma masiva.
+- **Columnas Requeridas:** `NIE`, `Nombres`, `Apellidos`, `Género`
+- **Formato:**
+  ```csv
+  NIE,Nombres,Apellidos,Género
+  12345678,Juan Pérez,García,Masculino
+  87654321,María López,Rodríguez,Femenino
+  ```
+- **Notas:** El sistema omitirá automáticamente la primera fila si detecta que contiene encabezados.
+
+### 2. Importación de Rúbricas
+Se utiliza dentro de la configuración de una Actividad para definir los criterios de evaluación.
+- **Columnas Requeridas:** `Criterio`, `Nivel`, `Puntos`, `Descripción`
+- **Formato:**
+  ```csv
+  Criterio,Nivel,Puntos,Descripcion
+  Ortografía,Excelente,2.0,Sin errores ortográficos.
+  Ortografía,Regular,1.0,Menos de 3 errores.
+  Contenido,Bueno,5.0,Desarrolla todos los puntos.
+  ```
+- **Notas:** 
+  - El sistema agrupa los niveles bajo el mismo nombre de criterio.
+  - Los puntos aceptan decimales (ej. `0.5` o `1.0`).
+  - La descripción es opcional pero recomendada para mayor claridad.
+
+---
+
 ## 📂 Estructura del Proyecto
 
 ```text

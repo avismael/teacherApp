@@ -18,3 +18,4 @@ pip-delete-this-directory.txt
 node_modules/
 registro_notas.bat
 registro_notas.vbs
+*.csv
