@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Editar Estudiante - TeacherApp{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex gap-2 text-sm text-slate-500 font-medium">
+    <a href="{{ url_for('secciones.index') }}" class="hover:text-primary">Secciones</a> 
+    <span>/</span> 
+    <a href="{{ url_for('secciones.detalle', id=seccion.id) }}" class="hover:text-primary">{{ seccion.nombre }}</a>
+    <span>/</span>
+    <span class="text-slate-800">Editar Alumno</span>
+</div>
+
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-100">
+        <h1 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+            <span class="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+            </span>
+            Editar Información del Estudiante
+        </h1>
+
+        <form action="{{ url_for('secciones.editar_estudiante', seccion_id=seccion.id, est_id=est.id) }}" method="POST" class="space-y-5">
+            <div>
+                <label for="nie" class="block text-sm font-semibold text-slate-700 mb-1">NIE</label>
+                <input type="text" id="nie" name="nie" value="{{ est.nie }}" 
+                       class="w-full border border-slate-300 rounded-lg px-4 py-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" 
+                       required>
+                <p class="text-xs text-slate-400 mt-1">El Número de Identificación Estudiantil debe ser único.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="nombres" class="block text-sm font-semibold text-slate-700 mb-1">Nombres</label>
+                    <input type="text" id="nombres" name="nombres" value="{{ est.nombres }}" 
+                           class="w-full border border-slate-300 rounded-lg px-4 py-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" 
+                           required>
+                </div>
+                <div>
+                    <label for="apellidos" class="block text-sm font-semibold text-slate-700 mb-1">Apellidos</label>
+                    <input type="text" id="apellidos" name="apellidos" value="{{ est.apellidos }}" 
+                           class="w-full border border-slate-300 rounded-lg px-4 py-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" 
+                           required>
+                </div>
+            </div>
+
+            <div>
+                <label for="genero" class="block text-sm font-semibold text-slate-700 mb-1">Género</label>
+                <select id="genero" name="genero" 
+                        class="w-full border border-slate-300 rounded-lg px-4 py-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" 
+                        required>
+                    <option value="Masculino" {% if est.genero == 'Masculino' %}selected{% endif %}>Masculino</option>
+                    <option value="Femenino" {% if est.genero == 'Femenino' %}selected{% endif %}>Femenino</option>
+                    <option value="Otro" {% if est.genero == 'Otro' %}selected{% endif %}>Otro/Prefiero no decir</option>
+                </select>
+            </div>
+
+            <div class="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+                <a href="{{ url_for('secciones.detalle', id=seccion.id) }}" 
+                   class="px-6 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-colors">
+                    Cancelar
+                </a>
+                <button type="submit" 
+                        class="px-6 py-2.5 rounded-lg text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-200 transition-all">
+                    Guardar Cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -136,12 +136,47 @@ def importar_estudiantes(seccion_id):
     flash(f'Carga masiva completada: {matriculados} matriculados ({registrados_nuevos} estudiantes creados desde cero).', 'success')
     return redirect(url_for('secciones.detalle', id=seccion.id))
 
+@secciones_bp.route('/<int:seccion_id>/editar_estudiante/<int:est_id>', methods=['GET', 'POST'])
+def editar_estudiante(seccion_id, est_id):
+    seccion = Seccion.query.get_or_404(seccion_id)
+    est = Estudiante.query.get_or_404(est_id)
+    
+    if request.method == 'POST':
+        nie = request.form.get('nie')
+        nombres = request.form.get('nombres')
+        apellidos = request.form.get('apellidos')
+        genero = request.form.get('genero')
+        
+        if not nie or not nombres or not apellidos or not genero:
+            flash('Todos los campos son requeridos', 'error')
+            return redirect(url_for('secciones.editar_estudiante', seccion_id=seccion_id, est_id=est_id))
+        
+        # Verificar si el NIE ya existe en otro estudiante
+        if nie != est.nie:
+            existente = Estudiante.query.filter_by(nie=nie).first()
+            if existente:
+                flash('El NIE ya está registrado para otro estudiante.', 'error')
+                return redirect(url_for('secciones.editar_estudiante', seccion_id=seccion_id, est_id=est_id))
+        
+        est.nie = nie
+        est.nombres = nombres
+        est.apellidos = apellidos
+        est.genero = genero
+        
+        db.session.commit()
+        flash('Información del estudiante actualizada correctamente.', 'success')
+        return redirect(url_for('secciones.detalle', id=seccion_id))
+        
+    return render_template('secciones/editar_estudiante.html', seccion=seccion, est=est)
+
 @secciones_bp.route('/<int:seccion_id>/remover_estudiante/<int:est_id>', methods=['POST'])
 def remover_estudiante(seccion_id, est_id):
     seccion = Seccion.query.get_or_404(seccion_id)
     est = Estudiante.query.get_or_404(est_id)
-    if est in seccion.estudiantes:
-        seccion.estudiantes.remove(est)
-        db.session.commit()
-        flash('Estudiante removido de la sección', 'success')
+    
+    # Eliminación definitiva del estudiante
+    db.session.delete(est)
+    db.session.commit()
+    flash('Estudiante eliminado definitivamente del sistema y de todas sus secciones.', 'success')
+    
     return redirect(url_for('secciones.detalle', id=seccion.id))
