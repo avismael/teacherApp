@@ -99,19 +99,23 @@
         <tr>
             <td>
                 <div class="stats-label">Presentes</div>
-                <div class="stats-value">{{ stats.Presente }}</div>
+                <div class="stats-value">{{ stats.Presente.total }}</div>
+                <div style="font-size: 8pt; color: #64748b; margin-top: 5px;">M: {{ stats.Presente.M }} | F: {{ stats.Presente.F }}</div>
             </td>
             <td>
                 <div class="stats-label">Ausentes</div>
-                <div class="stats-value">{{ stats.Ausente }}</div>
+                <div class="stats-value">{{ stats.Ausente.total }}</div>
+                <div style="font-size: 8pt; color: #64748b; margin-top: 5px;">M: {{ stats.Ausente.M }} | F: {{ stats.Ausente.F }}</div>
             </td>
             <td>
                 <div class="stats-label">Permisos</div>
-                <div class="stats-value">{{ stats.Permiso }}</div>
+                <div class="stats-value">{{ stats.Permiso.total }}</div>
+                <div style="font-size: 8pt; color: #64748b; margin-top: 5px;">M: {{ stats.Permiso.M }} | F: {{ stats.Permiso.F }}</div>
             </td>
             <td>
                 <div class="stats-label">Escapes</div>
-                <div class="stats-value">{{ stats.Escape }}</div>
+                <div class="stats-value">{{ stats.Escape.total }}</div>
+                <div style="font-size: 8pt; color: #64748b; margin-top: 5px;">M: {{ stats.Escape.M }} | F: {{ stats.Escape.F }}</div>
             </td>
         </tr>
     </table>

@@ -42,22 +42,26 @@
     </div>
 
     <!-- Dashboard de Estadísticas en Vivo -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl">
-            <span class="text-emerald-600 text-xs font-bold uppercase block mb-1">Presentes</span>
-            <span id="stat-presente" class="text-2xl font-black text-emerald-800">0</span>
+    <div class="grid grid-cols-4 gap-2 md:gap-4 mb-8 text-center">
+        <div class="bg-emerald-50 border border-emerald-100 p-3 md:p-5 rounded-xl flex flex-col justify-center items-center">
+            <span class="text-emerald-600 text-[9px] md:text-xs font-bold uppercase block mb-1">Presentes</span>
+            <span id="stat-presente" class="text-xl md:text-2xl font-black text-emerald-800">0</span>
+            <div id="stat-presente-det" class="text-[9px] md:text-[10px] font-bold text-emerald-600/70 mt-1 uppercase tracking-wider">M: 0 | F: 0</div>
         </div>
-        <div class="bg-red-50 border border-red-100 p-4 rounded-xl">
-            <span class="text-red-600 text-xs font-bold uppercase block mb-1">Ausentes</span>
-            <span id="stat-ausente" class="text-2xl font-black text-red-800">0</span>
+        <div class="bg-red-50 border border-red-100 p-3 md:p-5 rounded-xl flex flex-col justify-center items-center">
+            <span class="text-red-600 text-[9px] md:text-xs font-bold uppercase block mb-1">Ausentes</span>
+            <span id="stat-ausente" class="text-xl md:text-2xl font-black text-red-800">0</span>
+            <div id="stat-ausente-det" class="text-[9px] md:text-[10px] font-bold text-red-600/70 mt-1 uppercase tracking-wider">M: 0 | F: 0</div>
         </div>
-        <div class="bg-amber-50 border border-amber-100 p-4 rounded-xl">
-            <span class="text-amber-600 text-xs font-bold uppercase block mb-1">Permisos</span>
-            <span id="stat-permiso" class="text-2xl font-black text-amber-800">0</span>
+        <div class="bg-amber-50 border border-amber-100 p-3 md:p-5 rounded-xl flex flex-col justify-center items-center">
+            <span class="text-amber-600 text-[9px] md:text-xs font-bold uppercase block mb-1">Permisos</span>
+            <span id="stat-permiso" class="text-xl md:text-2xl font-black text-amber-800">0</span>
+            <div id="stat-permiso-det" class="text-[9px] md:text-[10px] font-bold text-amber-600/70 mt-1 uppercase tracking-wider">M: 0 | F: 0</div>
         </div>
-        <div class="bg-slate-100 border border-slate-200 p-4 rounded-xl">
-            <span class="text-slate-500 text-xs font-bold uppercase block mb-1">Escapes</span>
-            <span id="stat-escape" class="text-2xl font-black text-slate-800">0</span>
+        <div class="bg-slate-100 border border-slate-200 p-3 md:p-5 rounded-xl flex flex-col justify-center items-center">
+            <span class="text-slate-500 text-[9px] md:text-xs font-bold uppercase block mb-1">Escapes</span>
+            <span id="stat-escape" class="text-xl md:text-2xl font-black text-slate-800">0</span>
+            <div id="stat-escape-det" class="text-[9px] md:text-[10px] font-bold text-slate-500/70 mt-1 uppercase tracking-wider">M: 0 | F: 0</div>
         </div>
     </div>
 
@@ -83,7 +87,7 @@
             </div>
 
             <!-- Botón de Ciclo Principal (Edición) -->
-            <input type="hidden" name="estado_{{ est.id }}" id="input-{{ est.id }}" value="{{ estado }}">
+            <input type="hidden" name="estado_{{ est.id }}" id="input-{{ est.id }}" value="{{ estado }}" data-genero="{{ est.genero }}">
             <button type="button" onclick="cycleStatus({{ est.id }})" id="btn-{{ est.id }}" class="w-full py-3 md:py-5 rounded-xl border-2 font-black text-xs md:text-sm uppercase tracking-widest transition-all duration-300 shadow active:scale-95 flex flex-col items-center justify-center gap-1">
                 <span id="label-{{ est.id }}">{{ estado }}</span>
                 <span class="text-[8px] md:text-[9px] opacity-60 font-medium normal-case tracking-normal">Clic para cambiar</span>
@@ -184,19 +188,36 @@ function cycleStatus(estId) {
 
 function updateGlobalStats() {
     const allInputs = document.querySelectorAll('input[type="hidden"][id^="input-"]');
-    let stats = { 'Presente': 0, 'Ausente': 0, 'Permiso': 0, 'Escape': 0 };
+    let stats = { 
+        'Presente': {total: 0, m: 0, f: 0}, 
+        'Ausente': {total: 0, m: 0, f: 0}, 
+        'Permiso': {total: 0, m: 0, f: 0}, 
+        'Escape': {total: 0, m: 0, f: 0} 
+    };
 
     allInputs.forEach(input => {
-        if(stats[input.value] !== undefined) stats[input.value]++;
+        let val = input.value;
+        let gen = (input.getAttribute('data-genero') || '').toLowerCase();
+        if(stats[val] !== undefined) {
+            stats[val].total++;
+            if (gen === 'masculino' || gen === 'm') stats[val].m++;
+            else if (gen === 'femenino' || gen === 'f') stats[val].f++;
+        }
     });
 
     ['presente', 'ausente', 'permiso', 'escape'].forEach(key => {
         const el = document.getElementById(`stat-${key}`);
-        const newValue = stats[key.charAt(0).toUpperCase() + key.slice(1)];
-        if (el && el.innerText !== newValue.toString()) {
-            el.innerText = newValue;
+        const detEl = document.getElementById(`stat-${key}-det`);
+        const keyCap = key.charAt(0).toUpperCase() + key.slice(1);
+        const newTotal = stats[keyCap].total;
+        
+        if (el && el.innerText !== newTotal.toString()) {
+            el.innerText = newTotal;
             el.classList.add('scale-125');
             setTimeout(() => el.classList.remove('scale-125'), 200);
+        }
+        if (detEl) {
+            detEl.innerText = `M: ${stats[keyCap].m} | F: ${stats[keyCap].f}`;
         }
     });
 }
