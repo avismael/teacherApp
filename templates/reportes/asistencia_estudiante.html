@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block title %}Asistencia Estudiante: {{ estudiante.apellidos }}{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex gap-2 text-sm text-slate-500 font-medium">
+    <a href="{{ url_for('reportes.index') }}" class="hover:text-primary">Reportes</a>
+    <span>/</span>
+    <span class="text-slate-800">Expediente de Asistencia</span>
+</div>
+
+<div class="mb-8 p-6 bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-start gap-6">
+    <div class="flex gap-6 items-center">
+        <div class="w-16 h-16 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-3xl font-bold border border-amber-100 shadow-sm">
+            {{ estudiante.apellidos[0] }}{{ estudiante.nombres[0] }}
+        </div>
+        <div>
+            <h1 class="text-3xl font-bold text-slate-800">{{ estudiante.apellidos }}, {{ estudiante.nombres }}</h1>
+            <p class="text-slate-500 mt-1">NIE: {{ estudiante.nie }} | Resumen Individual</p>
+        </div>
+    </div>
+    <div class="flex items-center gap-6">
+        <div class="text-center">
+            <span class="block text-[10px] font-black uppercase text-slate-400 mb-1">Porcentaje General</span>
+            <div class="px-4 py-2 rounded-xl text-3xl font-black {% if porcentaje >= 85 %}bg-emerald-50 text-emerald-700{% elif porcentaje >= 75 %}bg-amber-50 text-amber-700{% else %}bg-red-50 text-red-700{% endif %} border border-current opacity-80 shadow-sm">
+                {{ porcentaje }}%
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resumen de Totales -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:border-emerald-200 transition-colors">
+        <span class="text-emerald-600 text-[10px] font-black uppercase block mb-1">Presentes</span>
+        <span class="text-2xl font-black text-slate-800">{{ stats.Presente }}</span>
+    </div>
+    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:border-red-200 transition-colors">
+        <span class="text-red-600 text-[10px] font-black uppercase block mb-1">Ausentes</span>
+        <span class="text-2xl font-black text-slate-800">{{ stats.Ausente }}</span>
+    </div>
+    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:border-amber-200 transition-colors">
+        <span class="text-amber-600 text-[10px] font-black uppercase block mb-1">Permisos</span>
+        <span class="text-2xl font-black text-slate-800">{{ stats.Permiso }}</span>
+    </div>
+    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:border-slate-300 transition-colors">
+        <span class="text-slate-500 text-[10px] font-black uppercase block mb-1">Escapes</span>
+        <span class="text-2xl font-black text-slate-800">{{ stats.Escape }}</span>
+    </div>
+</div>
+
+<!-- Tabla Detallada -->
+<div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+    <div class="p-4 border-b border-slate-100 bg-slate-50/50">
+        <h3 class="font-bold text-slate-700">Bitácora de Asistencias</h3>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse min-w-[700px]">
+            <thead class="bg-slate-50 border-b border-slate-200">
+                <tr>
+                    <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase">Fecha</th>
+                    <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase">Sección</th>
+                    <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase">Turno</th>
+                    <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase text-center">Estado</th>
+                    <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase">Notas / Justificación</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for det in detalles %}
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-4 font-bold text-slate-800">{{ det.cabecera.fecha.strftime('%d/%m/%Y') }}</td>
+                    <td class="px-6 py-4 text-slate-600 text-sm font-medium">{{ det.cabecera.seccion.nombre }}</td>
+                    <td class="px-6 py-4">
+                        <span class="text-[9px] font-black uppercase text-slate-400 bg-slate-100 px-2 py-1 rounded-full">{{ det.cabecera.turno }}</span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase
+                            {% if det.estado == 'Presente' %}bg-emerald-100 text-emerald-700
+                            {% elif det.estado == 'Ausente' %}bg-red-100 text-red-700
+                            {% elif det.estado == 'Permiso' %}bg-amber-100 text-amber-700
+                            {% else %}bg-slate-200 text-slate-700{% endif %}">
+                            {{ det.estado }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if det.nota %}
+                            <p class="text-xs text-slate-500 italic max-w-xs truncate" title="{{ det.nota }}">"{{ det.nota }}"</p>
+                        {% endif %}
+                        {% if det.archivo_justificacion %}
+                            <a href="{{ url_for('static', filename='uploads/asistencia/' + det.archivo_justificacion) }}" target="_blank" class="text-indigo-600 font-bold text-[9px] uppercase hover:underline inline-flex items-center gap-1 mt-1 bg-indigo-50 px-2 py-1 rounded-lg">
+                                <span>📄</span> EXPEDIENTE ADJUNTO
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="py-12 text-center text-slate-400 italic">No hay registros de asistencia para este estudiante.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

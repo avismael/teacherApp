@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, send_file
-from models import Asignatura, Seccion, Estudiante, Periodo, Nota, Actividad, NotaRecuperacion
+from models import Asignatura, Seccion, Estudiante, Periodo, Nota, Actividad, NotaRecuperacion, Asistencia, AsistenciaDetalle
 from extensions import db
 import io
 from openpyxl import Workbook
@@ -344,3 +344,53 @@ def reporte_rubrica(actividad_id):
     from datetime import datetime
     now = datetime.now().strftime("%d/%m/%Y %H:%M")
     return render_template('reportes/rubrica_print.html', actividad=actividad, periodo=periodo, asignatura=asignatura, now=now)
+
+@reportes_bp.route('/asistencia/seccion/<int:seccion_id>')
+def asistencia_seccion(seccion_id):
+    seccion = Seccion.query.get_or_404(seccion_id)
+    asistencias = Asistencia.query.filter_by(seccion_id=seccion_id).order_by(Asistencia.fecha.desc()).all()
+    
+    # Calcular resumen por estudiante
+    estudiantes_stats = []
+    for est in seccion.estudiantes:
+        stats = {'Presente': 0, 'Ausente': 0, 'Permiso': 0, 'Escape': 0, 'Total': 0}
+        detalles = AsistenciaDetalle.query.join(Asistencia).filter(
+            AsistenciaDetalle.estudiante_id == est.id,
+            Asistencia.seccion_id == seccion_id
+        ).all()
+        
+        for d in detalles:
+            stats[d.estado] += 1
+            stats['Total'] += 1
+            
+        porcentaje = (stats['Presente'] / stats['Total'] * 100) if stats['Total'] > 0 else 0
+        estudiantes_stats.append({
+            'estudiante': est,
+            'stats': stats,
+            'porcentaje': round(porcentaje, 1)
+        })
+    
+    return render_template('reportes/asistencia_seccion.html', 
+                           seccion=seccion, 
+                           stats=estudiantes_stats, 
+                           asistencias=asistencias)
+
+@reportes_bp.route('/asistencia/estudiante/<int:estudiante_id>')
+def asistencia_estudiante(estudiante_id):
+    est = Estudiante.query.get_or_404(estudiante_id)
+    detalles = AsistenciaDetalle.query.join(Asistencia).filter(
+        AsistenciaDetalle.estudiante_id == estudiante_id
+    ).order_by(Asistencia.fecha.desc()).all()
+    
+    stats = {'Presente': 0, 'Ausente': 0, 'Permiso': 0, 'Escape': 0, 'Total': 0}
+    for d in detalles:
+        stats[d.estado] += 1
+        stats['Total'] += 1
+        
+    porcentaje = (stats['Presente'] / stats['Total'] * 100) if stats['Total'] > 0 else 0
+    
+    return render_template('reportes/asistencia_estudiante.html', 
+                           estudiante=est, 
+                           detalles=detalles, 
+                           stats=stats,
+                           porcentaje=round(porcentaje, 1))

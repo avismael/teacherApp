@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Historial de Asistencia{% endblock %}
+
+{% block content %}
+<div class="mb-8 p-6 bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6">
+    <div>
+        <h1 class="text-3xl font-bold text-slate-800">Historial de Asistencia</h1>
+        <p class="text-slate-500 mt-1">Registros pasados y búsqueda global.</p>
+    </div>
+    
+    <div class="w-full md:w-96">
+        <form action="{{ url_for('asistencia.historial') }}" method="GET" class="relative">
+            <input type="text" name="q" value="{{ q }}" placeholder=" 🔍 Buscar por sección o fecha (YYYY-MM-DD)..." 
+                   class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-primary focus:border-primary transition-all">
+        </form>
+    </div>
+</div>
+
+<div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+    <table class="w-full text-left">
+        <thead class="bg-slate-50 border-b border-slate-200">
+            <tr>
+                <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase tracking-wider">Fecha</th>
+                <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase tracking-wider">Hora</th>
+                <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase tracking-wider">Sección</th>
+                <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase tracking-wider text-center">Turno</th>
+                <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase tracking-wider text-center">Población</th>
+                <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase tracking-wider text-right">Acciones</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+            {% for asis in asistencias %}
+            <tr class="hover:bg-slate-50 transition group">
+                <td class="px-6 py-4 text-slate-900 font-bold whitespace-nowrap">{{ asis.fecha.strftime('%d/%m/%Y') }}</td>
+                <td class="px-6 py-4 text-slate-500 whitespace-nowrap">{{ asis.hora.strftime('%H:%M') }}</td>
+                <td class="px-6 py-4 text-slate-700 font-medium">{{ asis.seccion.nombre }}</td>
+                <td class="px-6 py-4 text-center">
+                    <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase {% if asis.turno == 'Matutino' %}bg-blue-100 text-blue-700{% else %}bg-orange-100 text-orange-700{% endif %}">
+                        {{ asis.turno }}
+                    </span>
+                </td>
+                <td class="px-6 py-4 text-center font-mono text-sm text-slate-600">{{ asis.detalles|length }} alumnos</td>
+                <td class="px-6 py-4 text-right flex justify-end gap-2">
+                    <a href="{{ url_for('asistencia.detalle', id=asis.id) }}" class="p-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition" title="Ver Detalles">
+                        👁️
+                    </a>
+                    <a href="{{ url_for('asistencia.editar', id=asis.id) }}" class="p-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition" title="Editar">
+                        ✏️
+                    </a>
+                    <form action="{{ url_for('asistencia.eliminar', id=asis.id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este registro de asistencia? Esta acción no se puede deshacer.')" class="inline">
+                        <button type="submit" class="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition" title="Eliminar">
+                            🗑️
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" class="px-6 py-12 text-center text-slate-500 bg-slate-50/50">
+                    <span class="text-4xl block mb-2">📅</span>
+                    No se encontraron registros de asistencia.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

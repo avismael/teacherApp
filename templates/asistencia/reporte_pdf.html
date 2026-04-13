@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: letter;
+            margin: 1cm;
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            color: #1e293b;
+            font-size: 10pt;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #4f46e5;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #1e293b;
+            margin: 0;
+            font-size: 18pt;
+        }
+        .header p {
+            margin: 5px 0 0 0;
+            color: #64748b;
+        }
+        .info-grid {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .info-grid td {
+            padding: 5px;
+        }
+        .stats-table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+        .stats-table td {
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        .stats-label {
+            font-size: 8pt;
+            font-weight: bold;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+        .stats-value {
+            font-size: 14pt;
+            font-weight: bold;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 8px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 9pt;
+        }
+        .data-table td {
+            border: 1px solid #e2e8f0;
+            padding: 8px;
+            font-size: 9pt;
+        }
+        .status-badge {
+            font-weight: bold;
+            font-size: 8pt;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>REPORTE DE ASISTENCIA</h1>
+        <p>Instituto Nacional de Santa Elena | TeacherApp</p>
+    </div>
+
+    <table class="info-grid">
+        <tr>
+            <td width="50%"><strong>Sección:</strong> {{ asistencia.seccion.nombre }}</td>
+            <td width="50%" align="right"><strong>Fecha:</strong> {{ asistencia.fecha.strftime('%d/%m/%Y') }}</td>
+        </tr>
+        <tr>
+            <td><strong>Turno:</strong> {{ asistencia.turno }}</td>
+            <td align="right"><strong>Hora de Registro:</strong> {{ asistencia.hora.strftime('%H:%M') }}</td>
+        </tr>
+    </table>
+
+    <table class="stats-table">
+        <tr>
+            <td>
+                <div class="stats-label">Presentes</div>
+                <div class="stats-value">{{ stats.Presente }}</div>
+            </td>
+            <td>
+                <div class="stats-label">Ausentes</div>
+                <div class="stats-value">{{ stats.Ausente }}</div>
+            </td>
+            <td>
+                <div class="stats-label">Permisos</div>
+                <div class="stats-value">{{ stats.Permiso }}</div>
+            </td>
+            <td>
+                <div class="stats-label">Escapes</div>
+                <div class="stats-value">{{ stats.Escape }}</div>
+            </td>
+        </tr>
+    </table>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th width="15%">NIE</th>
+                <th width="45%">Estudiante</th>
+                <th width="15%">Estado</th>
+                <th width="25%">Notas</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for det in asistencia.detalles %}
+            <tr>
+                <td>{{ det.estudiante.nie }}</td>
+                <td>{{ det.estudiante.apellidos }}, {{ det.estudiante.nombres }}</td>
+                <td><span class="status-badge">{{ det.estado }}</span></td>
+                <td>{{ det.nota if det.nota else '' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="margin-top: 50px; text-align: center;">
+        <div style="border-top: 1px solid #000; width: 250px; margin: 0 auto; padding-top: 5px;">
+            Firma del Docente
+        </div>
+    </div>
+</body>
+</html>

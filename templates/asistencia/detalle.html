@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}Detalle de Asistencia: {{ asistencia.seccion.nombre }}{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex gap-2 text-sm text-slate-500 font-medium">
+    <a href="{{ url_for('asistencia.historial') }}" class="hover:text-primary">Historial</a>
+    <span>/</span>
+    <span class="text-slate-800">Detalle</span>
+</div>
+
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+    <div>
+        <h1 class="text-3xl font-bold text-slate-800">{{ asistencia.seccion.nombre }}</h1>
+        <div class="flex items-center gap-4 mt-1 text-slate-500 font-medium">
+            <span>📅 {{ asistencia.fecha.strftime('%d/%m/%Y') }}</span>
+            <span>🕒 {{ asistencia.hora.strftime('%H:%M') }}</span>
+            <span class="px-2 py-0.5 rounded bg-slate-100 text-[10px] font-black uppercase text-slate-600 border border-slate-200">{{ asistencia.turno }}</span>
+        </div>
+    </div>
+    
+    <div class="flex flex-wrap gap-3">
+        <a href="{{ url_for('asistencia.reporte_pdf', id=asistencia.id) }}" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-indigo-700 transition shadow-lg shadow-indigo-200">
+            <span>📄</span> DESCARGAR PDF
+        </a>
+        <a href="{{ url_for('asistencia.editar', id=asistencia.id) }}" class="bg-white text-slate-600 border border-slate-200 px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-slate-50 transition shadow-sm">
+            <span>✏️</span> EDITAR REGISTRO
+        </a>
+    </div>
+</div>
+
+<!-- Dashboard de Estadísticas Reales -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl">
+        <span class="text-emerald-600 text-xs font-bold uppercase block mb-1">Presentes</span>
+        <span class="text-2xl font-black text-emerald-800">{{ stats.Presente }}</span>
+    </div>
+    <div class="bg-red-50 border border-red-100 p-4 rounded-xl">
+        <span class="text-red-600 text-xs font-bold uppercase block mb-1">Ausentes</span>
+        <span class="text-2xl font-black text-red-800">{{ stats.Ausente }}</span>
+    </div>
+    <div class="bg-amber-50 border border-amber-100 p-4 rounded-xl">
+        <span class="text-amber-600 text-xs font-bold uppercase block mb-1">Permisos</span>
+        <span class="text-2xl font-black text-amber-800">{{ stats.Permiso }}</span>
+    </div>
+    <div class="bg-slate-100 border border-slate-200 p-4 rounded-xl">
+        <span class="text-slate-500 text-xs font-bold uppercase block mb-1">Escapes</span>
+        <span class="text-2xl font-black text-slate-800">{{ stats.Escape }}</span>
+    </div>
+</div>
+
+<!-- Listado Detallado -->
+<div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+    <table class="w-full text-left">
+        <thead class="bg-slate-50 border-b border-slate-200">
+            <tr>
+                <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase tracking-wider">NIE</th>
+                <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase tracking-wider">Estudiante</th>
+                <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase tracking-wider">Estado</th>
+                <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase tracking-wider">Justificación / Notas</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+            {% for det in asistencia.detalles %}
+            <tr>
+                <td class="px-6 py-4 text-slate-400 font-mono text-xs">{{ det.estudiante.nie }}</td>
+                <td class="px-6 py-4 text-slate-800 font-bold">{{ det.estudiante.apellidos }}, {{ det.estudiante.nombres }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase
+                        {% if det.estado == 'Presente' %}bg-emerald-100 text-emerald-700
+                        {% elif det.estado == 'Ausente' %}bg-red-100 text-red-700
+                        {% elif det.estado == 'Permiso' %}bg-amber-100 text-amber-700
+                        {% else %}bg-slate-200 text-slate-700{% endif %}">
+                        {{ det.estado }}
+                    </span>
+                </td>
+                <td class="px-6 py-4">
+                    {% if det.nota %}
+                        <p class="text-sm text-slate-600 italic">"{{ det.nota }}"</p>
+                    {% endif %}
+                    {% if det.archivo_justificacion %}
+                        <div class="mt-2 flex items-center gap-2">
+                             <a href="{{ url_for('static', filename='uploads/asistencia/' + det.archivo_justificacion) }}" target="_blank" class="text-indigo-600 font-bold text-xs flex items-center gap-1 hover:underline">
+                                <span>📂</span> Ver Comprobante
+                             </a>
+                        </div>
+                    {% endif %}
+                    {% if not det.nota and not det.archivo_justificacion %}
+                        <span class="text-slate-300 text-xs">Sin registros adicionales</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

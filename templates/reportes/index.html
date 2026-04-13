@@ -2,28 +2,27 @@
 {% block title %}Reportes - TeacherApp{% endblock %}
 
 {% block content %}
-<div class="mb-8 p-6 bg-white rounded-2xl shadow-sm border border-slate-100">
-    <h1 class="text-3xl font-bold text-slate-800">Centro de Reportes</h1>
-    <p class="text-slate-500 mt-2">Genera informes detallados para asignaturas, secciones o estudiantes individuales.</p>
-</div>
+<div class="max-w-7xl mx-auto w-full font-sans">
+    <div class="mb-8 p-6 bg-white rounded-2xl shadow-sm border border-slate-100">
+        <h1 class="text-3xl font-bold text-slate-800">Centro de Reportes</h1>
+        <p class="text-slate-500 mt-2">Genera informes detallados para asignaturas, secciones o estudiantes individuales.</p>
+    </div>
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-    
-    <!-- Reporte por Asignatura -->
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full">
-        <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-2xl mb-4">📖</div>
-        <h3 class="text-xl font-bold text-slate-800 mb-2">Por Asignatura</h3>
-        <p class="text-sm text-slate-500 mb-6 flex-1">Cuadros de notas detallados por materia. Incluye actividades, recuperaciones y promedios por periodo.</p>
-        
-        <div class="space-y-4">
-            <div>
-                <label class="text-xs font-bold text-slate-400 uppercase mb-1 block">Seleccionar Materia y Grupo</label>
-                <div class="flex flex-col gap-2">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <!-- Reporte por Asignatura -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full hover:shadow-lg transition-shadow">
+            <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-2xl mb-4">📖</div>
+            <h3 class="text-xl font-bold text-slate-800 mb-2">Por Asignatura</h3>
+            <p class="text-sm text-slate-500 mb-6 flex-1">Cuadros de notas detallados por materia. Incluye actividades, recuperaciones y promedios.</p>
+            
+            <div class="space-y-3">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-tighter block mb-1">Materia y Grupo</label>
+                <div class="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
                     {% for asig in asignaturas %}
                         {% for sec in asig.secciones %}
-                        <a href="{{ url_for('reportes.reporte_asignatura', asignatura_id=asig.id, seccion_id=sec.id) }}" class="text-sm p-3 border border-slate-100 rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition group flex justify-between items-center">
-                            <div>
-                                <span class="font-bold text-slate-700 block">{{ asig.nombre }}</span>
+                        <a href="{{ url_for('reportes.reporte_asignatura', asignatura_id=asig.id, seccion_id=sec.id) }}" class="text-[11px] p-2 border border-slate-100 rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition group flex justify-between items-center font-bold">
+                            <div class="truncate">
+                                <span class="text-slate-700 block truncate">{{ asig.nombre }}</span>
                                 <span class="text-xs text-slate-500">{{ sec.nombre }}</span>
                             </div>
                             <span class="opacity-0 group-hover:opacity-100 transition text-indigo-600">→</span>
@@ -33,70 +32,144 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Reporte por Sección -->
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full">
-        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-2xl mb-4">🏫</div>
-        <h3 class="text-xl font-bold text-slate-800 mb-2">Por Sección (Consolidado)</h3>
-        <p class="text-sm text-slate-500 mb-6 flex-1">Resumen general del grupo. Compara el rendimiento de los estudiantes en todas sus materias matriculadas.</p>
-        
-        <div class="space-y-2">
-            <label class="text-xs font-bold text-slate-400 uppercase mb-1 block">Seleccionar Sección</label>
-            {% for sec in secciones %}
-                <a href="{{ url_for('reportes.reporte_seccion', seccion_id=sec.id) }}" class="text-sm p-3 border border-slate-100 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition group flex justify-between items-center">
-                    <span class="font-bold text-slate-700">{{ sec.nombre }}</span>
-                    <span class="opacity-0 group-hover:opacity-100 transition text-emerald-600">→</span>
-                </a>
-            {% endfor %}
-        </div>
-    </div>
-
-    <!-- Reporte por Estudiante -->
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full">
-        <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center text-2xl mb-4">🎓</div>
-        <h3 class="text-xl font-bold text-slate-800 mb-2">Por Estudiante (Boletín)</h3>
-        <p class="text-sm text-slate-500 mb-6 flex-1">Genera la boleta de calificaciones individual. Ideal para entrega de notas a padres de familia.</p>
-        
-        <div class="mb-4">
-            <div class="relative">
-                <input type="text" id="search-estudiante" placeholder=" 🔍 Filtrar por nombre o NIE..." 
-                       class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-9 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all font-medium">
+        <!-- Reporte por Sección -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full hover:shadow-lg transition-shadow">
+            <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-2xl mb-4">🏫</div>
+            <h3 class="text-xl font-bold text-slate-800 mb-2">Por Sección</h3>
+            <p class="text-sm text-slate-500 mb-6 flex-1">Resumen general del grupo. Compara el rendimiento en todas sus materias matriculadas.</p>
+            
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-tighter block mb-1">Seleccionar Sección</label>
+                {% for sec in secciones %}
+                    <a href="{{ url_for('reportes.reporte_seccion', seccion_id=sec.id) }}" class="text-[11px] p-3 border border-slate-100 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition group flex justify-between items-center font-bold uppercase">
+                        <span class="text-slate-700">{{ sec.nombre }}</span>
+                        <span class="opacity-0 group-hover:opacity-100 transition text-emerald-600">→</span>
+                    </a>
+                {% endfor %}
             </div>
         </div>
 
-        <div class="space-y-2 max-h-96 overflow-auto pr-2" id="student-list">
-            {% for est in estudiantes %}
-                <a href="{{ url_for('reportes.reporte_estudiante', estudiante_id=est.id) }}" 
-                   data-name="{{ est.apellidos }} {{ est.nombres }}" data-nie="{{ est.nie }}"
-                   class="estudiante-item text-sm p-3 border border-slate-100 rounded-lg hover:border-amber-300 hover:bg-amber-50 transition group flex justify-between items-center">
-                    <div>
-                        <span class="font-bold text-slate-700 block">{{ est.apellidos }}, {{ est.nombres }}</span>
-                        <span class="text-xs text-slate-500">NIE: {{ est.nie }}</span>
-                    </div>
-                    <span class="opacity-0 group-hover:opacity-100 transition text-amber-600">→</span>
-                </a>
-            {% endfor %}
+        <!-- Reporte por Estudiante -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full hover:shadow-lg transition-shadow">
+            <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center text-2xl mb-4">🎓</div>
+            <h3 class="text-xl font-bold text-slate-800 mb-2">Por Estudiante</h3>
+            <p class="text-sm text-slate-500 mb-6 flex-1">Genera la boleta de calificaciones individual. Ideal para entrega de notas a padres.</p>
+            <div class="mt-auto pt-6 relative">
+                <input type="text" id="search-estudiante" placeholder="Filtrar estudiante..." 
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all font-medium">
+                
+                <div class="absolute top-14 left-0 w-full z-20 bg-white border border-slate-200 shadow-xl rounded-xl space-y-1 max-h-48 overflow-y-auto p-2 custom-scrollbar hidden" id="student-list">
+                    {% for est in estudiantes %}
+                        <a href="{{ url_for('reportes.reporte_estudiante', estudiante_id=est.id) }}" 
+                           data-name="{{ est.apellidos }} {{ est.nombres }}" data-nie="{{ est.nie }}"
+                           class="estudiante-item text-xs p-3 border border-transparent rounded-lg hover:border-amber-200 hover:bg-amber-50 transition font-bold flex justify-between items-center group">
+                            <div class="flex-1 min-w-0 mr-2">
+                                <span class="text-slate-700 block truncate">{{ est.apellidos }}, {{ est.nombres }}</span>
+                            </div>
+                            <span class="opacity-0 group-hover:opacity-100 transition text-amber-600">→</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- Reportes de Asistencia -->
+    <div class="mt-8 border-t border-slate-100 pt-12">
+        <div class="flex items-center gap-4 mb-10">
+            <h2 class="text-2xl font-black text-slate-800 tracking-tight">Análisis de Asistencia</h2>
+            <div class="h-px bg-slate-200 flex-1"></div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+            <!-- Por Sección (Asistencia) -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full hover:shadow-lg transition-shadow">
+                <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-2xl mb-4">📅</div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Por Sección</h3>
+                <p class="text-sm text-slate-500 mb-6 flex-1">Porcentajes de asistencia y bitácora de sesiones detallada por grupo.</p>
+                
+                <div class="mt-auto pt-6">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-tighter block mb-2">Secciones Asignadas</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {% for sec in secciones %}
+                        <a href="{{ url_for('reportes.asistencia_seccion', seccion_id=sec.id) }}" class="text-xs py-2 px-3 border border-slate-100 rounded-xl hover:border-indigo-300 hover:bg-indigo-50 transition font-bold text-slate-700 text-center truncate uppercase">
+                            {{ sec.nombre }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Por Estudiante (Asistencia) -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full hover:shadow-lg transition-shadow">
+                <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center text-2xl mb-4">👤</div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Por Estudiante</h3>
+                <p class="text-sm text-slate-500 mb-6 flex-1">Expediente detallado de faltas, notas de permisos y escapes individuales.</p>
+                
+                <div class="mt-auto pt-6 relative">
+                    <input type="text" id="filter-asis-est" placeholder="Buscar estudiante..." 
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all font-medium">
+                    <span class="absolute right-4 top-10 opacity-30">🔍</span>
+                
+                    <div class="absolute top-16 left-0 w-full z-20 bg-white border border-slate-200 shadow-xl rounded-xl space-y-1 max-h-48 overflow-y-auto p-2 custom-scrollbar hidden" id="asis-est-list">
+                        {% for est in estudiantes %}
+                        <a href="{{ url_for('reportes.asistencia_estudiante', estudiante_id=est.id) }}" 
+                           data-name="{{ est.apellidos }} {{ est.nombres }}"
+                           class="asis-est-item text-xs p-3 border border-transparent rounded-lg hover:border-amber-200 hover:bg-amber-50 transition font-bold flex justify-between items-center group text-slate-700 uppercase">
+                            <div class="flex-1 min-w-0 mr-2">
+                                <span class="block truncate">{{ est.apellidos }}, {{ est.nombres }}</span>
+                            </div>
+                            <span class="opacity-0 group-hover:opacity-100 transition text-amber-600">→</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
 document.getElementById('search-estudiante').addEventListener('input', function(e) {
     let term = e.target.value.toLowerCase().trim();
+    let container = document.getElementById('student-list');
     let items = document.querySelectorAll('.estudiante-item');
     
+    if (term.length === 0) {
+        container.classList.add('hidden');
+        return;
+    }
+    
+    container.classList.remove('hidden');
     items.forEach(item => {
         let name = item.getAttribute('data-name').toLowerCase();
         let nie = item.getAttribute('data-nie').toLowerCase();
-        
-        if (name.includes(term) || nie.includes(term)) {
-            item.style.display = 'flex';
-        } else {
-            item.style.display = 'none';
-        }
+        item.style.display = (name.includes(term) || nie.includes(term)) ? 'flex' : 'none';
+    });
+});
+
+document.getElementById('filter-asis-est').addEventListener('input', function(e) {
+    let term = e.target.value.toLowerCase().trim();
+    let container = document.getElementById('asis-est-list');
+    let items = document.querySelectorAll('.asis-est-item');
+    
+    if (term.length === 0) {
+        container.classList.add('hidden');
+        return;
+    }
+    
+    container.classList.remove('hidden');
+    items.forEach(item => {
+        let name = item.getAttribute('data-name').toLowerCase();
+        item.style.display = name.includes(term) ? 'block' : 'none';
     });
 });
 </script>
+
+<style>
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+</style>
 {% endblock %}

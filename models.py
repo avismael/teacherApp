@@ -91,3 +91,23 @@ class NotaRecuperacion(db.Model):
     estudiante_id = db.Column(db.Integer, db.ForeignKey('estudiante.id', ondelete="CASCADE"), nullable=False)
     
     __table_args__ = (db.UniqueConstraint('periodo_id', 'estudiante_id', name='_periodo_estudiante_recup_uc'),)
+
+class Asistencia(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    seccion_id = db.Column(db.Integer, db.ForeignKey('seccion.id', ondelete="CASCADE"), nullable=False)
+    fecha = db.Column(db.Date, nullable=False)
+    hora = db.Column(db.Time, nullable=False)
+    turno = db.Column(db.String(20), nullable=False) # Matutino, Vespertino
+    
+    detalles = db.relationship('AsistenciaDetalle', backref='cabecera', lazy=True, cascade="all, delete-orphan")
+    seccion = db.relationship('Seccion', backref=db.backref('asistencias', lazy=True))
+
+class AsistenciaDetalle(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    asistencia_id = db.Column(db.Integer, db.ForeignKey('asistencia.id', ondelete="CASCADE"), nullable=False)
+    estudiante_id = db.Column(db.Integer, db.ForeignKey('estudiante.id', ondelete="CASCADE"), nullable=False)
+    estado = db.Column(db.String(20), nullable=False) # Presente, Ausente, Permiso, Escape
+    nota = db.Column(db.Text, nullable=True)
+    archivo_justificacion = db.Column(db.String(255), nullable=True)
+    
+    estudiante = db.relationship('Estudiante', backref=db.backref('registros_asistencia', lazy=True))

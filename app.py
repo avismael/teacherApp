@@ -1,4 +1,5 @@
 from flask import Flask, render_template
+import os
 from config import Config
 from extensions import db
 
@@ -10,6 +11,7 @@ from routes.estudiantes import estudiantes_bp
 from routes.evaluaciones import evaluaciones_bp
 from routes.calificaciones import calificaciones_bp
 from routes.reportes import reportes_bp
+from routes.asistencia import asistencia_bp
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -25,11 +27,16 @@ def create_app(config_class=Config):
     app.register_blueprint(evaluaciones_bp, url_prefix='/evaluaciones')
     app.register_blueprint(calificaciones_bp, url_prefix='/calificaciones')
     app.register_blueprint(reportes_bp, url_prefix='/reportes')
+    app.register_blueprint(asistencia_bp, url_prefix='/asistencia')
 
     # Crear tablas
     with app.app_context():
         import models
         db.create_all()
+        
+        # Asegurar directorios de subida
+        if not os.path.exists(app.config['UPLOAD_FOLDER_ASISTENCIA']):
+            os.makedirs(app.config['UPLOAD_FOLDER_ASISTENCIA'], exist_ok=True)
 
     @app.errorhandler(404)
     def page_not_found(e):

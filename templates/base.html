@@ -36,8 +36,11 @@
             <a href="{{ url_for('secciones.index') }}" class="px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'secciones' in request.endpoint %}bg-slate-800{% endif %}">
                 🏫 Secciones
             </a>
+            <a href="{{ url_for('asistencia.index') }}" class="px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'asistencia' in request.endpoint %}bg-slate-800{% endif %}">
+                📅 Asistencia
+            </a>
             <a href="{{ url_for('reportes.index') }}" class="px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'reportes' in request.endpoint %}bg-slate-800{% endif %}">
-                📝 Reportes Académicos
+                📝 Reportes
             </a>
         </nav>
         <div class="p-6 text-sm text-slate-400 border-t border-slate-700/50">
@@ -72,7 +75,10 @@
             <a href="{{ url_for('secciones.index') }}" class="mobile-nav-link stagger-4 anim-fade-in px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'secciones' in request.endpoint %}bg-slate-800 text-white{% endif %}">
                 🏫 Secciones
             </a>
-            <a href="{{ url_for('reportes.index') }}" class="mobile-nav-link stagger-5 anim-fade-in px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'reportes' in request.endpoint %}bg-slate-800 text-white{% endif %}">
+            <a href="{{ url_for('asistencia.index') }}" class="mobile-nav-link stagger-5 anim-fade-in px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'asistencia' in request.endpoint %}bg-slate-800 text-white{% endif %}">
+                📅 Toma de Asistencia
+            </a>
+            <a href="{{ url_for('reportes.index') }}" class="mobile-nav-link stagger-6 anim-fade-in px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'reportes' in request.endpoint %}bg-slate-800 text-white{% endif %}">
                 📝 Reportes Académicos
             </a>
         </nav>

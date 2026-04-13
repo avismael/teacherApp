@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}Asistencia: {{ seccion.nombre }}{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex gap-2 text-sm text-slate-500 font-medium">
+    <a href="{{ url_for('reportes.index') }}" class="hover:text-primary">Reportes</a>
+    <span>/</span>
+    <span class="text-slate-800">Resumen de Asistencia</span>
+</div>
+
+<div class="mb-8 p-6 bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-start gap-6">
+    <div>
+        <h1 class="text-3xl font-bold text-slate-800">{{ seccion.nombre }}</h1>
+        <p class="text-slate-500 mt-1">Resumen acumulado de asistencia del grupo.</p>
+    </div>
+    <div class="flex gap-4">
+        <div class="text-center p-4 bg-slate-50 rounded-xl border border-slate-100">
+            <span class="block text-[10px] font-black uppercase text-slate-400">Total Sesiones</span>
+            <span class="text-xl font-bold text-slate-700">{{ asistencias|length }}</span>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla Informativa de Estudiantes -->
+<div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden mb-8">
+    <div class="p-4 border-b border-slate-100 bg-slate-50/50">
+        <h3 class="font-bold text-slate-700">Consolidado por Estudiante</h3>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse min-w-[600px]">
+            <thead class="bg-slate-50 border-b border-slate-200">
+                <tr>
+                    <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase cursor-default">Estudiante</th>
+                    <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase text-center cursor-default">Pres.</th>
+                    <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase text-center cursor-default">Aus.</th>
+                    <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase text-center cursor-default">Perm.</th>
+                    <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase text-center cursor-default">Esc.</th>
+                    <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase text-center cursor-default">% Asis.</th>
+                    <th class="px-6 py-4 font-bold text-slate-600 text-xs uppercase text-right cursor-default">Acción</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for item in stats %}
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-4">
+                        <span class="font-bold text-slate-800 block">{{ item.estudiante.apellidos }}, {{ item.estudiante.nombres }}</span>
+                        <span class="text-[10px] text-slate-400 font-mono">{{ item.estudiante.nie }}</span>
+                    </td>
+                    <td class="px-6 py-4 text-center font-bold text-emerald-600">{{ item.stats.Presente }}</td>
+                    <td class="px-6 py-4 text-center font-bold text-red-600">{{ item.stats.Ausente }}</td>
+                    <td class="px-6 py-4 text-center font-bold text-amber-600">{{ item.stats.Permiso }}</td>
+                    <td class="px-6 py-4 text-center font-bold text-slate-500">{{ item.stats.Escape }}</td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="px-2 py-1 rounded-lg font-black text-sm {% if item.porcentaje >= 85 %}bg-emerald-50 text-emerald-700{% elif item.porcentaje >= 75 %}bg-amber-50 text-amber-700{% else %}bg-red-50 text-red-700{% endif %}">
+                            {{ item.porcentaje }}%
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <a href="{{ url_for('reportes.asistencia_estudiante', estudiante_id=item.estudiante.id) }}" class="inline-flex items-center px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg font-bold text-[10px] uppercase hover:bg-indigo-600 hover:text-white transition-all">
+                            VER DETALLE
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Listado de Sesiones Recientes -->
+<div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+    <div class="p-4 border-b border-slate-100 bg-slate-50/50">
+        <h3 class="font-bold text-slate-700">Sesiones Registradas</h3>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+        {% for asis in asistencias %}
+        <a href="{{ url_for('asistencia.detalle', id=asis.id) }}" class="p-4 border border-slate-100 rounded-xl hover:bg-slate-50 hover:border-indigo-200 transition group relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-1">
+                <div class="w-1 h-1 bg-indigo-400 rounded-full opacity-0 group-hover:opacity-100 transition"></div>
+            </div>
+            <div class="flex justify-between items-center mb-2">
+                <span class="font-bold text-slate-800">{{ asis.fecha.strftime('%d/%m/%Y') }}</span>
+                <span class="text-[9px] px-2 py-0.5 rounded-full bg-slate-100 font-black uppercase text-slate-500">{{ asis.turno }}</span>
+            </div>
+            <div class="flex gap-2 text-[10px] font-bold">
+                <span class="text-indigo-400 opacity-0 group-hover:opacity-100 transition-all transform translate-x-[-10px] group-hover:translate-x-0">Ver Registro →</span>
+            </div>
+        </a>
+        {% else %}
+        <div class="col-span-full py-8 text-center text-slate-400 text-sm italic">
+            No hay sesiones registradas para esta sección.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

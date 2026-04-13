@@ -10,3 +10,6 @@ class Config:
         'sqlite:///' + os.path.join(basedir, 'notas_v5.db')
         
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    
+    # Directorio para subidas de asistencia
+    UPLOAD_FOLDER_ASISTENCIA = os.path.join(basedir, 'static', 'uploads', 'asistencia')
