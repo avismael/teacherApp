@@ -19,7 +19,7 @@
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
         <div class="flex flex-col mb-4 gap-2">
             <h2 class="font-bold text-xl text-slate-800">Grupos Matriculados</h2>
-            <form action="{{ url_for('asignaturas.matricular_seccion', asignatura_id=asignatura.id) }}" method="POST" class="flex md:w-1/2 gap-2">
+            <form action="{{ url_for('asignaturas.matricular_seccion', asignatura_id=asignatura.id) }}" method="POST" class="flex md:w-1/2 gap-2 flex-col md:flex-row sm:flex-row">
                 <select name="seccion_id" class="border border-slate-300 rounded px-3 py-1 text-sm focus:border-primary focus:outline-none flex-1" required>
                     <option value="" disabled selected>-- Elige un grupo global --</option>
                     {% for sec in secciones_disponibles %}
@@ -64,7 +64,7 @@
                 <h2 class="font-bold text-xl text-slate-800">Plan de Evaluación (Columnas del Grid)</h2>
                 <p class="text-sm text-slate-500 mt-1">Lo que configures aquí le aplicará idénticamente a todos los grupos matriculados.</p>
             </div>
-            <form action="{{ url_for('evaluaciones.crear_periodo', asignatura_id=asignatura.id) }}" method="POST" class="flex gap-2">
+            <form action="{{ url_for('evaluaciones.crear_periodo', asignatura_id=asignatura.id) }}" method="POST" class="flex gap-2 flex-col md:flex-row sm:flex-row">
                 <input type="text" name="nombre" placeholder="Ej: Trimestre 1" class="border border-slate-300 rounded px-3 py-1 text-sm focus:border-primary focus:outline-none w-48" required>
                 <button type="submit" class="bg-slate-800 text-white text-sm font-medium px-4 py-1 rounded hover:bg-slate-700 transition shadow-sm">Agregar Periodo</button>
             </form>

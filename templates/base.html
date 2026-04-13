@@ -18,84 +18,60 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex">
 
-    <!-- Sidebar Navigation -->
-    <aside class="w-64 bg-secondary text-white hidden lg:flex flex-col shadow-lg transition-all duration-300">
-        <div class="h-16 flex items-center px-6 font-bold text-xl tracking-tight border-b border-slate-700/50">
-            <span class="text-accent mr-2">👨‍🏫</span> TeacherApp
-        </div>
-        <nav class="flex-1 py-6 flex flex-col gap-2 px-4">
-            <a href="{{ url_for('dashboard.index') }}" class="px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if request.endpoint == 'dashboard.index' %}bg-primary hover:bg-primary{% endif %}">
-                🏠 Panel Inicial
-            </a>
-            <a href="{{ url_for('asignaturas.index') }}" class="px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'asignaturas' in request.endpoint %}bg-slate-800{% endif %}">
-                📖 Asignaturas
-            </a>
-            <a href="{{ url_for('estudiantes.index') }}" class="px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'estudiantes' in request.endpoint %}bg-slate-800{% endif %}">
-                🎓 Estudiantes
-            </a>
-            <a href="{{ url_for('secciones.index') }}" class="px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'secciones' in request.endpoint %}bg-slate-800{% endif %}">
-                🏫 Secciones
-            </a>
-            <a href="{{ url_for('asistencia.index') }}" class="px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'asistencia' in request.endpoint %}bg-slate-800{% endif %}">
-                📅 Asistencia
-            </a>
-            <a href="{{ url_for('reportes.index') }}" class="px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'reportes' in request.endpoint %}bg-slate-800{% endif %}">
-                📝 Reportes
-            </a>
-        </nav>
-        <div class="p-6 text-sm text-slate-400 border-t border-slate-700/50">
-            Herramienta Docente &copy; 2026
-            @avifernando
-        </div>
-    </aside>
-
-    <!-- Mobile Menu Backdrop -->
-    <div id="mobile-menu-backdrop" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300 lg:hidden"></div>
-
-    <!-- Mobile Menu Drawer -->
-    <aside id="mobile-menu-drawer" class="fixed inset-y-0 left-0 w-72 bg-secondary text-white z-50 transform -translate-x-full transition-transform duration-300 ease-in-out lg:hidden flex flex-col shadow-2xl">
-        <div class="h-16 flex items-center justify-between px-6 border-b border-slate-700/50">
-            <div class="font-bold text-xl tracking-tight">
-                <span class="text-accent mr-2">👨‍🏫</span> TeacherApp
+    <!-- Unified App Sidebar -->
+    <aside id="app-sidebar" class="bg-secondary text-white flex flex-col shadow-xl transition-all duration-300 ease-in-out w-20 lg:w-64 flex-shrink-0 z-50 h-screen sticky top-0 group">
+        
+        <!-- Cabecera Logo (Botón Toggle Universal) -->
+        <button id="logo-toggle" class="h-16 w-full flex items-center px-2 font-bold text-xl tracking-tight border-b border-slate-700/50 z-20 hover:bg-slate-800 transition-colors focus:outline-none relative group/logo cursor-pointer">
+            <div class="flex items-center overflow-hidden whitespace-nowrap pointer-events-none">
+                <span class="text-accent text-3xl w-16 text-center flex-shrink-0 group-hover/logo:scale-110 active:scale-95 transition-transform" title="Expandir/Contraer Menú">👨‍🏫</span> 
+                <span class="nav-text font-black transition-opacity duration-300 lg:opacity-100 opacity-0 relative top-1">TeacherApp</span>
             </div>
-            <button id="mobile-menu-close" class="p-2 text-slate-400 hover:text-white transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-        </div>
-        <nav class="flex-1 py-6 flex flex-col gap-2 px-4 shadow-inner">
-            <a href="{{ url_for('dashboard.index') }}" class="mobile-nav-link stagger-1 anim-fade-in px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if request.endpoint == 'dashboard.index' %}bg-primary hover:bg-primary text-white shadow-md shadow-primary/20{% endif %}">
-                🏠 Panel Inicial
+            <!-- Pequeño icono de pistas visuales -->
+            <div class="absolute right-3 text-slate-500 opacity-0 group-[.expanded]/logo:rotate-180 transition-all lg:group-hover/logo:opacity-100 hidden lg:block">
+                ⇋
+            </div>
+        </button>
+
+        <!-- Links de Navegación -->
+        <nav class="flex-1 py-6 flex flex-col gap-2 px-2 overflow-y-auto overflow-x-hidden z-20 tooltip-container">
+            <a href="{{ url_for('dashboard.index') }}" title="Panel Inicial" class="group relative px-2 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if request.endpoint == 'dashboard.index' %}bg-primary hover:bg-primary text-white shadow-md shadow-primary/20{% endif %}">
+                <span class="text-2xl w-16 text-center flex-shrink-0 group-hover:scale-110 transition-transform">🏠</span>
+                <span class="nav-text font-medium whitespace-nowrap transition-opacity duration-300 lg:opacity-100 opacity-0">Panel Inicial</span>
             </a>
-            <a href="{{ url_for('asignaturas.index') }}" class="mobile-nav-link stagger-2 anim-fade-in px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'asignaturas' in request.endpoint %}bg-slate-800 text-white{% endif %}">
-                📖 Asignaturas
+            <a href="{{ url_for('asignaturas.index') }}" title="Asignaturas" class="group relative px-2 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'asignaturas' in request.endpoint %}bg-slate-800 text-white{% endif %}">
+                <span class="text-2xl w-16 text-center flex-shrink-0 group-hover:scale-110 transition-transform">📖</span>
+                <span class="nav-text font-medium whitespace-nowrap transition-opacity duration-300 lg:opacity-100 opacity-0">Asignaturas</span>
             </a>
-            <a href="{{ url_for('estudiantes.index') }}" class="mobile-nav-link stagger-3 anim-fade-in px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'estudiantes' in request.endpoint %}bg-slate-800 text-white{% endif %}">
-                🎓 Estudiantes
+            <a href="{{ url_for('estudiantes.index') }}" title="Estudiantes" class="group relative px-2 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'estudiantes' in request.endpoint %}bg-slate-800 text-white{% endif %}">
+                <span class="text-2xl w-16 text-center flex-shrink-0 group-hover:scale-110 transition-transform">🎓</span>
+                <span class="nav-text font-medium whitespace-nowrap transition-opacity duration-300 lg:opacity-100 opacity-0">Estudiantes</span>
             </a>
-            <a href="{{ url_for('secciones.index') }}" class="mobile-nav-link stagger-4 anim-fade-in px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'secciones' in request.endpoint %}bg-slate-800 text-white{% endif %}">
-                🏫 Secciones
+            <a href="{{ url_for('secciones.index') }}" title="Secciones" class="group relative px-2 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'secciones' in request.endpoint %}bg-slate-800 text-white{% endif %}">
+                <span class="text-2xl w-16 text-center flex-shrink-0 group-hover:scale-110 transition-transform">🏫</span>
+                <span class="nav-text font-medium whitespace-nowrap transition-opacity duration-300 lg:opacity-100 opacity-0">Secciones</span>
             </a>
-            <a href="{{ url_for('asistencia.index') }}" class="mobile-nav-link stagger-5 anim-fade-in px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'asistencia' in request.endpoint %}bg-slate-800 text-white{% endif %}">
-                📅 Toma de Asistencia
+            <a href="{{ url_for('asistencia.index') }}" title="Asistencia" class="group relative px-2 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'asistencia' in request.endpoint %}bg-slate-800 text-white{% endif %}">
+                <span class="text-2xl w-16 text-center flex-shrink-0 group-hover:scale-110 transition-transform">📅</span>
+                <span class="nav-text font-medium whitespace-nowrap transition-opacity duration-300 lg:opacity-100 opacity-0">Asistencia</span>
             </a>
-            <a href="{{ url_for('reportes.index') }}" class="mobile-nav-link stagger-6 anim-fade-in px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'reportes' in request.endpoint %}bg-slate-800 text-white{% endif %}">
-                📝 Reportes Académicos
+            <a href="{{ url_for('reportes.index') }}" title="Reportes" class="group relative px-2 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'reportes' in request.endpoint %}bg-slate-800 text-white{% endif %}">
+                <span class="text-2xl w-16 text-center flex-shrink-0 group-hover:scale-110 transition-transform">📝</span>
+                <span class="nav-text font-medium whitespace-nowrap transition-opacity duration-300 lg:opacity-100 opacity-0">Reportes</span>
             </a>
         </nav>
-        <div class="p-6 text-sm text-slate-400 border-t border-slate-700/50">
-            Herramienta Docente &copy; 2026
+        
+        <div class="px-2 pb-6 pt-4 text-xs text-slate-500 font-bold border-t border-slate-700/50 whitespace-nowrap overflow-hidden z-20">
+            <span class="nav-text transition-opacity duration-300 lg:opacity-100 opacity-0 text-center block tracking-widest pl-1 uppercase">&copy; 2026 T-App</span>
         </div>
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col min-h-screen overflow-hidden">
+    <main class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-slate-50 relative">
         
-        <!-- Top header for mobile -->
-        <header class="lg:hidden h-16 bg-white shadow-sm flex items-center justify-between px-4 sticky top-0 z-30">
-            <div class="font-bold text-lg text-slate-800"><span class="text-primary mr-2">👨‍🏫</span> TeacherApp</div>
-            <button id="mobile-menu-btn" class="p-2 -mr-2 text-slate-500 hover:text-slate-700 transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-            </button>
+        <!-- Mobile Top Title (Opcional, solo para ubicar visualmente) -->
+        <header class="h-16 bg-white shadow-sm flex items-center px-6 lg:hidden shrink-0 z-30 sticky top-0 justify-between">
+            <div class="font-bold text-lg text-slate-800 tracking-tight">TeacherApp</div>
         </header>
 
         <!-- Flash messages -->

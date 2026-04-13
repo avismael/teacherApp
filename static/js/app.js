@@ -1,65 +1,67 @@
 // app.js
 document.addEventListener('DOMContentLoaded', () => {
-    // Menu mobile toggle logic
-    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-    const mobileMenuClose = document.getElementById('mobile-menu-close');
-    const mobileMenuDrawer = document.getElementById('mobile-menu-drawer');
-    const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
+    const sidebar = document.getElementById('app-sidebar');
+    const logoToggle = document.getElementById('logo-toggle');
+    const navTexts = document.querySelectorAll('.nav-text');
 
-    function openMobileMenu() {
-        if (!mobileMenuDrawer || !mobileMenuBackdrop) return;
+    let isExpanded = window.innerWidth >= 1024;
+
+    function renderSidebar() {
+        if (!sidebar) return;
         
-        mobileMenuBackdrop.classList.remove('hidden');
-        // Small delay to allow CSS transitions to trigger
-        requestAnimationFrame(() => {
-            mobileMenuBackdrop.classList.remove('opacity-0');
-            mobileMenuBackdrop.classList.add('opacity-100');
-            mobileMenuDrawer.classList.remove('-translate-x-full');
-            mobileMenuDrawer.classList.add('translate-x-0');
+        // Transiciones fijas para evitar cortes raros al mutar estilos online
+        sidebar.style.transition = 'width 300ms ease-in-out';
+        navTexts.forEach(el => el.style.transition = 'opacity 300ms ease-in-out');
+
+        if (isExpanded) {
+            sidebar.style.width = '16rem'; // w-64
+            sidebar.classList.add('shadow-2xl');
+            logoToggle.classList.add('expanded');
+            
+            navTexts.forEach(el => {
+                el.style.opacity = '1';
+                el.style.visibility = 'visible';
+            });
+        } else {
+            sidebar.style.width = '5rem'; // w-20
+            sidebar.classList.remove('shadow-2xl');
+            logoToggle.classList.remove('expanded');
+            
+            navTexts.forEach(el => {
+                el.style.opacity = '0';
+                setTimeout(() => { if (!isExpanded) el.style.visibility = 'hidden'; }, 300);
+            });
+        }
+    }
+
+    if (logoToggle) {
+        logoToggle.addEventListener('click', () => {
+            isExpanded = !isExpanded;
+            renderSidebar();
         });
-        document.body.classList.add('overflow-hidden');
     }
 
-    function closeMobileMenu() {
-        if (!mobileMenuDrawer || !mobileMenuBackdrop) return;
-
-        mobileMenuBackdrop.classList.remove('opacity-100');
-        mobileMenuBackdrop.classList.add('opacity-0');
-        mobileMenuDrawer.classList.remove('translate-x-0');
-        mobileMenuDrawer.classList.add('-translate-x-full');
-        
-        // Wait for transition to finish before hiding
-        setTimeout(() => {
-            if (mobileMenuDrawer.classList.contains('-translate-x-full')) {
-                mobileMenuBackdrop.classList.add('hidden');
+    // Auto colapsar en móviles al tocar cualquier lado oscuro de fuera
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth < 1024 && isExpanded && sidebar) {
+            if (!sidebar.contains(e.target)) {
+                isExpanded = false;
+                renderSidebar();
             }
-        }, 300);
-        document.body.classList.remove('overflow-hidden');
-    }
-
-    if (mobileMenuBtn) {
-        mobileMenuBtn.addEventListener('click', openMobileMenu);
-    }
-
-    if (mobileMenuClose) {
-        mobileMenuClose.addEventListener('click', closeMobileMenu);
-    }
-
-    if (mobileMenuBackdrop) {
-        mobileMenuBackdrop.addEventListener('click', closeMobileMenu);
-    }
-
-    // Handle Escape key
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && mobileMenuDrawer && !mobileMenuDrawer.classList.contains('-translate-x-full')) {
-            closeMobileMenu();
         }
     });
 
-    // Close menu when window is resized to desktop width
+    // Restaurar control a tailwind al rotar el celular o crecer pantalla
     window.addEventListener('resize', () => {
-        if (window.innerWidth >= 768 && mobileMenuDrawer && !mobileMenuDrawer.classList.contains('-translate-x-full')) {
-            closeMobileMenu();
+        const desktop = window.innerWidth >= 1024;
+        if (desktop && !isExpanded && sidebar.style.width === '5rem') {
+            isExpanded = true;
+            // Limpia los inlines styles para que lg:w-64 del html fluya
+            sidebar.style.width = '';
+            navTexts.forEach(el => { el.style.opacity = ''; el.style.visibility = ''; });
+        } else if (!desktop && isExpanded) {
+            isExpanded = false;
+            renderSidebar();
         }
     });
 });
