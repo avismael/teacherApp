@@ -58,10 +58,18 @@
         <h3 class="text-xl font-bold text-slate-800 mb-2">Por Estudiante (Boletín)</h3>
         <p class="text-sm text-slate-500 mb-6 flex-1">Genera la boleta de calificaciones individual. Ideal para entrega de notas a padres de familia.</p>
         
-        <div class="space-y-2 max-h-96 overflow-auto pr-2">
-            <label class="text-xs font-bold text-slate-400 uppercase mb-1 block">Buscar Estudiante</label>
+        <div class="mb-4">
+            <div class="relative">
+                <input type="text" id="search-estudiante" placeholder=" 🔍 Filtrar por nombre o NIE..." 
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-9 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all font-medium">
+            </div>
+        </div>
+
+        <div class="space-y-2 max-h-96 overflow-auto pr-2" id="student-list">
             {% for est in estudiantes %}
-                <a href="{{ url_for('reportes.reporte_estudiante', estudiante_id=est.id) }}" class="text-sm p-3 border border-slate-100 rounded-lg hover:border-amber-300 hover:bg-amber-50 transition group flex justify-between items-center">
+                <a href="{{ url_for('reportes.reporte_estudiante', estudiante_id=est.id) }}" 
+                   data-name="{{ est.apellidos }} {{ est.nombres }}" data-nie="{{ est.nie }}"
+                   class="estudiante-item text-sm p-3 border border-slate-100 rounded-lg hover:border-amber-300 hover:bg-amber-50 transition group flex justify-between items-center">
                     <div>
                         <span class="font-bold text-slate-700 block">{{ est.apellidos }}, {{ est.nombres }}</span>
                         <span class="text-xs text-slate-500">NIE: {{ est.nie }}</span>
@@ -73,4 +81,22 @@
     </div>
 
 </div>
+
+<script>
+document.getElementById('search-estudiante').addEventListener('input', function(e) {
+    let term = e.target.value.toLowerCase().trim();
+    let items = document.querySelectorAll('.estudiante-item');
+    
+    items.forEach(item => {
+        let name = item.getAttribute('data-name').toLowerCase();
+        let nie = item.getAttribute('data-nie').toLowerCase();
+        
+        if (name.includes(term) || nie.includes(term)) {
+            item.style.display = 'flex';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+});
+</script>
 {% endblock %}
