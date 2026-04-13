@@ -17,41 +17,59 @@
                 <label class="text-sm font-medium text-slate-700 block mb-1">Nombre (ej: Grado 1 Seccion A)</label>
                 <input type="text" name="nombre" class="w-full border border-slate-300 rounded-lg px-3 py-2" required>
             </div>
-            <button type="submit" class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary-hover shadow w-full">Crear Sección</button>
+            <button type="submit"
+                class="bg-primary text-white font-medium py-2 px-4 rounded-lg hover:bg-primary-hover shadow w-full">Crear
+                Sección</button>
         </form>
     </div>
 
     <div class="col-span-1 md:col-span-2">
         {% if secciones %}
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <ul class="divide-y divide-slate-100">
-                    {% for sec in secciones %}
-                    <li class="hover:bg-slate-50 transition p-4 px-6 flex justify-between items-center group">
-                        <a href="{{ url_for('secciones.detalle', id=sec.id) }}" class="flex-1">
-                            <h4 class="font-bold text-slate-800 text-lg group-hover:text-primary transition">{{ sec.nombre }}</h4>
-                            <p class="text-slate-500 text-sm mt-1">{{ sec.estudiantes|length }} estudiantes inscritos</p>
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <ul class="divide-y divide-slate-100">
+                {% for sec in secciones %}
+                <li class="hover:bg-slate-50 transition p-4 px-6 flex justify-between items-center group">
+                    <a href="{{ url_for('secciones.detalle', id=sec.id) }}" class="flex-1">
+                        <h4 class="font-bold text-slate-800 text-lg group-hover:text-primary transition">{{ sec.nombre
+                            }}</h4>
+                        <p class="text-slate-500 text-sm mt-1">{{ sec.estudiantes|length }} estudiantes inscritos</p>
+                    </a>
+                    <div class="flex items-center gap-2">
+                        <a href="{{ url_for('secciones.editar', id=sec.id) }}"
+                            class="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition"
+                            title="Editar">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z">
+                                </path>
+                            </svg>
                         </a>
-                        <div class="flex items-center gap-2">
-                            <a href="{{ url_for('secciones.editar', id=sec.id) }}" class="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition" title="Editar">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                            </a>
-                            <form action="{{ url_for('secciones.eliminar', id=sec.id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar esta sección? Se aplicarán restricciones si existen alumnos o vínculos.')" class="inline">
-                                <button type="submit" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Eliminar">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                </button>
-                            </form>
-                            <a href="{{ url_for('secciones.detalle', id=sec.id) }}" class="ml-2 bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-slate-200 transition">
-                                Ver &rarr;
-                            </a>
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
+                        <form action="{{ url_for('secciones.eliminar', id=sec.id) }}" method="POST"
+                            onsubmit="return confirm('¿Estás seguro de eliminar esta sección? Se aplicarán restricciones si existen alumnos o vínculos.')"
+                            class="inline">
+                            <button type="submit"
+                                class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                title="Eliminar">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                    </path>
+                                </svg>
+                            </button>
+                        </form>
+                        <a href="{{ url_for('secciones.detalle', id=sec.id) }}"
+                            class="ml-2 bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-slate-200 transition">
+                            Ver &rarr;
+                        </a>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
         {% else %}
-            <div class="text-center py-10 bg-white rounded-xl border border-dashed border-slate-300">
-                <p class="text-slate-500">No hay secciones. Crea una a la izquierda.</p>
-            </div>
+        <div class="text-center py-10 bg-white rounded-xl border border-dashed border-slate-300">
+            <p class="text-slate-500">No hay secciones. Crea una a la izquierda.</p>
+        </div>
         {% endif %}
     </div>
 </div>

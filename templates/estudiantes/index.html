@@ -9,28 +9,44 @@
     </div>
 </div>
 
+<!-- Dashboard y Búsqueda -->
 <!-- Estadísticas Básicas -->
-<div class="grid grid-cols-4 gap-4 mb-8">
-    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col">
+<div class="flex flex-col sm:flex-row sm:justify-between md:flex-row gap-4 mb-8">
+    <div class="flex-1 bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col">
         <span class="text-slate-500 text-sm font-medium">Total Población</span>
         <span class="text-2xl font-bold text-slate-800">{{ stats.total }}</span>
     </div>
-    <div class="bg-blue-50 p-4 rounded-xl shadow-sm border border-blue-100 flex flex-col">
+    <div class="flex-1 bg-blue-50 p-4 rounded-xl shadow-sm border border-blue-100 flex flex-col">
         <span class="text-blue-600 text-sm font-medium">Masculino</span>
         <span class="text-2xl font-bold text-blue-900">{{ stats.masculinos }}</span>
     </div>
-    <div class="bg-pink-50 p-4 rounded-xl shadow-sm border border-pink-100 flex flex-col">
+    <div class="flex-1 bg-pink-50 p-4 rounded-xl shadow-sm border border-pink-100 flex flex-col">
         <span class="text-pink-600 text-sm font-medium">Femenino</span>
         <span class="text-2xl font-bold text-pink-900">{{ stats.femeninos }}</span>
     </div>
-    <div class="bg-slate-50 p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col">
-        <span class="text-slate-600 text-sm font-medium">Otros/N.D.</span>
-        <span class="text-2xl font-bold text-slate-800">{{ stats.otros }}</span>
+</div>
+
+<!-- Buscador Independiente mejorado -->
+<div class="mb-6">
+    <div class="bg-white p-2 rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <form action="{{ url_for('estudiantes.index') }}" method="GET" class="flex items-center">
+            <div class="relative flex-1 group">
+                <input type="text" name="q" placeholder="Buscar por NIE, nombres, apellidos o sección..." value="{{ stats.q }}"
+                       class="w-full bg-slate-50/50 border-none rounded-xl pl-12 pr-10 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-0 focus:bg-white transition-all font-medium">
+                {% if stats.q %}
+                <a href="{{ url_for('estudiantes.index') }}" class="absolute inset-y-0 right-3 flex items-center text-slate-300 hover:text-slate-500 transition-colors" title="Limpiar búsqueda">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </a>
+                {% endif %}
+            </div>
+            <button type="submit" class="ml-3 bg-slate-900 p-2 text-white font-bold text-xs uppercase tracking-widest px-8 py-3.5 rounded-xl hover:bg-slate-800 shadow-lg shadow-slate-200 transition-all whitespace-nowrap">
+                Buscar Estudiante
+            </button>
+        </form>
     </div>
 </div>
 
 <div class="grid grid-cols-1 gap-8">
-    <!-- Lista de Estudiantes (Ancho completo) -->
     <div class="w-full">
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
             <table class="w-full text-left">
@@ -48,7 +64,7 @@
                         <td class="px-6 py-4 text-slate-800 font-bold whitespace-nowrap">{{ est.nie }}</td>
                         <td class="px-6 py-4 text-slate-600 font-medium">{{ est.apellidos }}, {{ est.nombres }}</td>
                         <td class="px-6 py-4">
-                            <span class="px-2 py-1 rounded-full text-xs font-semibold {% if est.genero == 'Masculino' %}bg-blue-100 text-blue-700{% elif est.genero == 'Femenino' %}bg-pink-100 text-pink-700{% else %}bg-slate-100 text-slate-600{% endif %}">
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold {% if est.genero == 'Masculino' %}bg-blue-100 text-blue-700{% else %}bg-pink-100 text-pink-700{% endif %}">
                                 {{ est.genero }}
                             </span>
                         </td>
@@ -69,8 +85,8 @@
                     {% else %}
                     <tr>
                          <td colspan="4" class="px-6 py-12 text-center text-slate-500 bg-slate-50/50">
-                            <span class="text-4xl block mb-2">👥</span>
-                            No hay estudiantes registrados en la base de datos central.
+                            <span class="text-4xl block mb-2">🔍</span>
+                            No se encontraron estudiantes que coincidan con "{{ stats.q }}".
                          </td>
                     </tr>
                     {% endfor %}

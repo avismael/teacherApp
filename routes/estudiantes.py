@@ -1,7 +1,8 @@
 import csv
 import io
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from models import Estudiante
+from sqlalchemy import or_
+from models import Estudiante, Seccion
 from extensions import db
 
 estudiantes_bp = Blueprint('estudiantes', __name__)
@@ -29,19 +30,33 @@ def index():
         flash('Estudiante registrado exitosamente', 'success')
         return redirect(url_for('estudiantes.index'))
         
-    estudiantes = Estudiante.query.order_by(Estudiante.apellidos).all()
+    q = request.args.get('q', '')
+    query = Estudiante.query.order_by(Estudiante.apellidos)
     
-    # Calcular estadísticas
-    total_estudiantes = len(estudiantes)
-    total_masculinos = sum(1 for e in estudiantes if e.genero == 'Masculino')
-    total_femeninos = sum(1 for e in estudiantes if e.genero == 'Femenino')
-    total_otros = total_estudiantes - total_masculinos - total_femeninos
+    if q:
+        query = query.outerjoin(Estudiante.secciones).filter(
+            or_(
+                Estudiante.nie.ilike(f'%{q}%'),
+                Estudiante.nombres.ilike(f'%{q}%'),
+                Estudiante.apellidos.ilike(f'%{q}%'),
+                Seccion.nombre.ilike(f'%{q}%')
+            )
+        ).distinct()
+        
+    estudiantes = query.all()
+    
+    # Estadísticas globales (siempre sobre el total, o sobre el filtro?)
+    # El usuario no lo especificó, pero usualmente las estadísticas son globales.
+    total_db = Estudiante.query.all()
+    total_estudiantes = len(total_db)
+    total_masculinos = sum(1 for e in total_db if e.genero == 'Masculino')
+    total_femeninos = sum(1 for e in total_db if e.genero == 'Femenino')
     
     stats = {
         'total': total_estudiantes,
         'masculinos': total_masculinos,
         'femeninos': total_femeninos,
-        'otros': total_otros
+        'q': q
     }
     
     return render_template('estudiantes/index.html', estudiantes=estudiantes, stats=stats)
@@ -60,14 +75,12 @@ def importar_csv():
     stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
     csv_input = csv.reader(stream)
     
-    # Asumimos que la primera fila podría ser encabezados
-    # Formato esperado: NIE, Nombres, Apellidos, Genero
     registrados = 0
     errores = 0
     header_skipped = False
     
     for indice, row in enumerate(csv_input):
-        if not header_skipped: # Skip header (opcional, validando si parece encabezado)
+        if not header_skipped:
             if 'nie' in str(row).lower() or 'nombre' in str(row).lower():
                 header_skipped = True
                 continue
@@ -78,7 +91,6 @@ def importar_csv():
             apellidos = str(row[2]).strip()
             genero = str(row[3]).strip()
             
-            # Verificar duplicado
             ext = Estudiante.query.filter_by(nie=nie).first()
             if not ext and nie:
                 nuevo = Estudiante(nie=nie, nombres=nombres, apellidos=apellidos, genero=genero)

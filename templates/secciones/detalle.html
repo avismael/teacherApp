@@ -3,52 +3,80 @@
 
 {% block content %}
 <div class="mb-6 flex gap-2 text-sm text-slate-500 font-medium">
-    <a href="{{ url_for('secciones.index') }}" class="hover:text-primary">Secciones</a> 
-    <span>/</span> 
+    <a href="{{ url_for('secciones.index') }}" class="hover:text-primary">Secciones</a>
+    <span>/</span>
     <span class="text-slate-800">{{ seccion.nombre }}</span>
 </div>
 
-<div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mb-8 flex justify-between items-center">
-    <div>
-        <h1 class="text-3xl font-bold text-slate-800 mb-2">{{ seccion.nombre }}</h1>
-        <p class="text-slate-600">Total matriculados: {{ seccion.estudiantes|length }} alumnos</p>
+<div class="mb-8">
+    <h1 class="text-4xl font-extrabold text-slate-900 mb-6 drop-shadow-sm">{{ seccion.nombre }}</h1>
+    
+    <!-- Estadísticas de la Sección -->
+    <div class="flex flex-col sm:flex-row md:flex-row gap-4">
+        <div class="flex-1 bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col">
+            <span class="text-slate-500 text-sm font-medium uppercase tracking-wider">Total Inscritos</span>
+            <span class="text-2xl font-black text-slate-800">{{ seccion.estudiantes|length }}</span>
+        </div>
+        <div class="flex-1 bg-blue-50 p-4 rounded-xl shadow-sm border border-blue-100 flex flex-col">
+            <span class="text-blue-600 text-sm font-medium uppercase tracking-wider">Masculino</span>
+            <span class="text-2xl font-black text-blue-900">{{ seccion.estudiantes|selectattr('genero', 'equalto', 'Masculino')|list|length }}</span>
+        </div>
+        <div class="flex-1 bg-pink-50 p-4 rounded-xl shadow-sm border border-pink-100 flex flex-col">
+            <span class="text-pink-600 text-sm font-medium uppercase tracking-wider">Femenino</span>
+            <span class="text-2xl font-black text-pink-900">{{ seccion.estudiantes|selectattr('genero', 'equalto', 'Femenino')|list|length }}</span>
+        </div>
     </div>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <!-- Formularios para registrar en Sección -->
     <div class="col-span-1 flex flex-col gap-6 h-fit">
-        
+
         <!-- Individual -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
             <h3 class="font-bold text-lg text-slate-800 mb-4 border-b border-slate-100 pb-2">Matricular Alumno</h3>
-            <form action="{{ url_for('secciones.crear_y_matricular', seccion_id=seccion.id) }}" method="POST" class="flex flex-col gap-3 text-sm">
+            <form action="{{ url_for('secciones.crear_y_matricular', seccion_id=seccion.id) }}" method="POST"
+                class="flex flex-col gap-3 text-sm">
                 <div>
-                    <input type="text" name="nie" placeholder="NIE del estudiante" class="w-full border border-slate-300 rounded px-3 py-2 bg-slate-50 focus:bg-white" required>
-                    <p class="text-xs text-slate-400 mt-1">Si el NIE existe en el directorio general, solo lo añadirá a la sección. Si no, lo creará.</p>
+                    <input type="text" name="nie" placeholder="NIE del estudiante"
+                        class="w-full border border-slate-300 rounded px-3 py-2 bg-slate-50 focus:bg-white" required>
+                    <p class="text-xs text-slate-400 mt-1">Si el NIE existe en el directorio general, solo lo añadirá a
+                        la sección. Si no, lo creará.</p>
                 </div>
-                <div><input type="text" name="nombres" placeholder="Nombres" class="w-full border border-slate-300 rounded px-3 py-2 bg-slate-50 focus:bg-white" required></div>
-                <div><input type="text" name="apellidos" placeholder="Apellidos" class="w-full border border-slate-300 rounded px-3 py-2 bg-slate-50 focus:bg-white" required></div>
+                <div><input type="text" name="nombres" placeholder="Nombres"
+                        class="w-full border border-slate-300 rounded px-3 py-2 bg-slate-50 focus:bg-white" required>
+                </div>
+                <div><input type="text" name="apellidos" placeholder="Apellidos"
+                        class="w-full border border-slate-300 rounded px-3 py-2 bg-slate-50 focus:bg-white" required>
+                </div>
                 <div>
-                    <select name="genero" class="w-full border border-slate-300 rounded px-3 py-2 bg-slate-50 focus:bg-white" required>
+                    <select name="genero"
+                        class="w-full border border-slate-300 rounded px-3 py-2 bg-slate-50 focus:bg-white" required>
                         <option value="Masculino">Masculino</option>
                         <option value="Femenino">Femenino</option>
-                        <option value="Otro">Otro/Prefiero no decir</option>
                     </select>
                 </div>
-                <button type="submit" class="bg-slate-800 text-white py-2 rounded mt-2 hover:bg-slate-700 shadow-sm">Matricular Manualmente</button>
+                <button type="submit"
+                    class="bg-slate-800 text-white py-2 rounded mt-2 hover:bg-slate-700 shadow-sm">Matricular
+                    Manualmente</button>
             </form>
         </div>
-        
+
         <!-- Masivo CSV -->
         <div class="bg-indigo-50 p-6 rounded-2xl shadow-sm border border-indigo-100">
             <h3 class="text-lg font-bold text-indigo-900 mb-2 border-b border-indigo-200 pb-2 flex items-center gap-2">
                 <span>📁</span> Carga Masiva a Sección
             </h3>
-            <p class="text-xs text-indigo-700 mb-4 font-medium">Auto-creará y matriculará a esta sección con tu archivo CSV (NIE, Nombres, Apellidos, Género).</p>
-            <form action="{{ url_for('secciones.importar_estudiantes', seccion_id=seccion.id) }}" method="POST" enctype="multipart/form-data" class="flex flex-col gap-3">
-                <input type="file" name="archivo_csv" accept=".csv" class="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-white file:text-indigo-700 hover:file:bg-indigo-100 block w-full text-slate-500" required>
-                <button type="submit" class="bg-indigo-700 text-white text-sm font-medium py-2 px-4 rounded-lg hover:bg-indigo-800 transition shadow mt-2">Correr Importación</button>
+            <p class="text-xs text-indigo-700 mb-4 font-medium">Auto-creará y matriculará a esta sección con tu archivo
+                CSV (NIE, Nombres, Apellidos, Género).</p>
+            <form action="{{ url_for('secciones.importar_estudiantes', seccion_id=seccion.id) }}" method="POST"
+                enctype="multipart/form-data" class="flex flex-col gap-3">
+                <input type="file" name="archivo_csv" accept=".csv"
+                    class="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-white file:text-indigo-700 hover:file:bg-indigo-100 block w-full text-slate-500"
+                    required>
+                <button type="submit"
+                    class="bg-indigo-700 text-white text-sm font-medium py-2 px-4 rounded-lg hover:bg-indigo-800 transition shadow mt-2">Correr
+                    Importación</button>
             </form>
         </div>
     </div>
@@ -75,11 +103,16 @@
                         <td class="px-4 py-3">{{ est.genero }}</td>
                         <td class="px-4 py-3 text-right">
                             <div class="flex justify-end gap-2">
-                                <a href="{{ url_for('secciones.editar_estudiante', seccion_id=seccion.id, est_id=est.id) }}" class="text-indigo-600 hover:text-indigo-800 font-bold px-3 py-1 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-100">
+                                <a href="{{ url_for('secciones.editar_estudiante', seccion_id=seccion.id, est_id=est.id) }}"
+                                    class="text-indigo-600 hover:text-indigo-800 font-bold px-3 py-1 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-100">
                                     Editar
                                 </a>
-                                <form action="{{ url_for('secciones.remover_estudiante', seccion_id=seccion.id, est_id=est.id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas eliminar permanentemente a este estudiante? Esta acción no se puede deshacer y borrará todas sus notas y registros de todas las secciones.')">
-                                    <button type="submit" class="text-red-600 hover:text-red-800 font-bold px-3 py-1 bg-red-50 hover:bg-red-100 rounded-lg transition-colors border border-red-100">Eliminar</button>
+                                <form
+                                    action="{{ url_for('secciones.remover_estudiante', seccion_id=seccion.id, est_id=est.id) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('¿Estás seguro de que deseas eliminar permanentemente a este estudiante? Esta acción no se puede deshacer y borrará todas sus notas y registros de todas las secciones.')">
+                                    <button type="submit"
+                                        class="text-red-600 hover:text-red-800 font-bold px-3 py-1 bg-red-50 hover:bg-red-100 rounded-lg transition-colors border border-red-100">Eliminar</button>
                                 </form>
                             </div>
                         </td>
@@ -89,10 +122,10 @@
             </table>
         </div>
         {% else %}
-            <div class="text-center py-10 bg-slate-50 rounded border border-slate-200 border-dashed">
-                <p class="text-slate-500">No hay estudiantes en este grupo.</p>
-                <p class="text-sm mt-1 text-slate-400">Inscríbelos usando los formularios del menú izquierdo.</p>
-            </div>
+        <div class="text-center py-10 bg-slate-50 rounded border border-slate-200 border-dashed">
+            <p class="text-slate-500">No hay estudiantes en este grupo.</p>
+            <p class="text-sm mt-1 text-slate-400">Inscríbelos usando los formularios del menú izquierdo.</p>
+        </div>
         {% endif %}
     </div>
 </div>
