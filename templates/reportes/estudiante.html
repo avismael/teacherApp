@@ -35,7 +35,8 @@
     </div>
 
     <!-- Tabla de Calificaciones -->
-    <table class="w-full mb-12 border-collapse">
+    <div class="overflow-x-auto mb-12">
+        <table class="w-full border-collapse whitespace-nowrap md:whitespace-normal">
         <thead>
             <tr class="bg-slate-900 text-white">
                 <th class="px-4 py-3 text-left text-xs font-black uppercase tracking-wider rounded-tl-lg">Asignatura</th>
@@ -69,7 +70,8 @@
             </tr>
             {% endfor %}
         </tbody>
-    </table>
+        </table>
+    </div>
 
     <!-- Resumen de Resultados -->
     <div class="border-2 border-slate-900 p-6 rounded-xl mb-12 flex justify-between items-center">
