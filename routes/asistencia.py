@@ -93,13 +93,18 @@ def detalle(id):
     asistencia = Asistencia.query.get_or_404(id)
     # Estadísticas
     stats = {
-        'Presente': 0,
-        'Ausente': 0,
-        'Permiso': 0,
-        'Escape': 0
+        'Presente': {'total': 0, 'M': 0, 'F': 0},
+        'Ausente': {'total': 0, 'M': 0, 'F': 0},
+        'Permiso': {'total': 0, 'M': 0, 'F': 0},
+        'Escape': {'total': 0, 'M': 0, 'F': 0}
     }
     for d in asistencia.detalles:
-        stats[d.estado] = stats.get(d.estado, 0) + 1
+        stats[d.estado]['total'] += 1
+        gen = d.estudiante.genero.upper() if d.estudiante.genero else ''
+        if gen in ['MASCULINO', 'M']:
+            stats[d.estado]['M'] += 1
+        elif gen in ['FEMENINO', 'F']:
+            stats[d.estado]['F'] += 1
         
     return render_template('asistencia/detalle.html', asistencia=asistencia, stats=stats)
 
@@ -107,13 +112,18 @@ def detalle(id):
 def reporte_pdf(id):
     asistencia = Asistencia.query.get_or_404(id)
     stats = {
-        'Presente': 0,
-        'Ausente': 0,
-        'Permiso': 0,
-        'Escape': 0
+        'Presente': {'total': 0, 'M': 0, 'F': 0},
+        'Ausente': {'total': 0, 'M': 0, 'F': 0},
+        'Permiso': {'total': 0, 'M': 0, 'F': 0},
+        'Escape': {'total': 0, 'M': 0, 'F': 0}
     }
     for d in asistencia.detalles:
-        stats[d.estado] = stats.get(d.estado, 0) + 1
+        stats[d.estado]['total'] += 1
+        gen = d.estudiante.genero.upper() if d.estudiante.genero else ''
+        if gen in ['MASCULINO', 'M']:
+            stats[d.estado]['M'] += 1
+        elif gen in ['FEMENINO', 'F']:
+            stats[d.estado]['F'] += 1
         
     html = render_template('asistencia/reporte_pdf.html', asistencia=asistencia, stats=stats)
     

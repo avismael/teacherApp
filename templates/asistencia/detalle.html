@@ -32,19 +32,23 @@
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
     <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl">
         <span class="text-emerald-600 text-xs font-bold uppercase block mb-1">Presentes</span>
-        <span class="text-2xl font-black text-emerald-800">{{ stats.Presente }}</span>
+        <span class="text-2xl font-black text-emerald-800">{{ stats.Presente.total }}</span>
+        <div class="text-[20px] font-bold text-emerald-600/70 mt-1 uppercase tracking-wider">M: {{ stats.Presente.M }} | F: {{ stats.Presente.F }}</div>
     </div>
     <div class="bg-red-50 border border-red-100 p-4 rounded-xl">
         <span class="text-red-600 text-xs font-bold uppercase block mb-1">Ausentes</span>
-        <span class="text-2xl font-black text-red-800">{{ stats.Ausente }}</span>
+        <span class="text-2xl font-black text-red-800">{{ stats.Ausente.total }}</span>
+        <div class="text-[20px] font-bold text-red-600/70 mt-1 uppercase tracking-wider">M: {{ stats.Ausente.M }} | F: {{ stats.Ausente.F }}</div>
     </div>
     <div class="bg-amber-50 border border-amber-100 p-4 rounded-xl">
         <span class="text-amber-600 text-xs font-bold uppercase block mb-1">Permisos</span>
-        <span class="text-2xl font-black text-amber-800">{{ stats.Permiso }}</span>
+        <span class="text-2xl font-black text-amber-800">{{ stats.Permiso.total }}</span>
+        <div class="text-[20px] font-bold text-amber-600/70 mt-1 uppercase tracking-wider">M: {{ stats.Permiso.M }} | F: {{ stats.Permiso.F }}</div>
     </div>
     <div class="bg-slate-100 border border-slate-200 p-4 rounded-xl">
         <span class="text-slate-500 text-xs font-bold uppercase block mb-1">Escapes</span>
-        <span class="text-2xl font-black text-slate-800">{{ stats.Escape }}</span>
+        <span class="text-2xl font-black text-slate-800">{{ stats.Escape.total }}</span>
+        <div class="text-[20px] font-bold text-slate-500/70 mt-1 uppercase tracking-wider">M: {{ stats.Escape.M }} | F: {{ stats.Escape.F }}</div>
     </div>
 </div>
 
