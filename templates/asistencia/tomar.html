@@ -60,38 +60,38 @@
     </div>
 
     <!-- Grid de Estudiantes -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 items-start">
         {% for est in estudiantes %}
-        <div id="card-{{ est.id }}" class="student-card bg-white rounded-3xl shadow-sm border-2 border-slate-100 p-6 flex flex-col transition-all duration-300 hover:shadow-xl group" data-est-id="{{ est.id }}">
-            <div class="mb-5 flex justify-between items-start">
+        <div id="card-{{ est.id }}" class="student-card bg-white rounded-2xl shadow-sm border-2 border-slate-100 p-4 md:p-6 flex flex-col transition-all duration-300 hover:shadow-lg group" data-est-id="{{ est.id }}">
+            <div class="mb-3 md:mb-5 flex justify-between items-start">
                 <div>
-                    <h4 class="font-black text-slate-800 leading-tight text-lg group-hover:text-primary transition-colors text-ellipsis overflow-hidden">{{ est.apellidos }}</h4>
-                    <p class="text-sm text-slate-500 font-medium">{{ est.nombres }}</p>
+                    <h4 class="font-black text-slate-800 leading-tight text-base md:text-lg group-hover:text-primary transition-colors text-ellipsis overflow-hidden">{{ est.apellidos }}</h4>
+                    <p class="text-xs md:text-sm text-slate-500 font-medium">{{ est.nombres }}</p>
                 </div>
                 <div class="bg-slate-100 px-2 py-1 rounded-lg">
-                    <span class="text-[10px] text-slate-500 font-black font-mono uppercase">NIE: {{ est.nie }}</span>
+                    <span class="text-[9px] md:text-[10px] text-slate-500 font-black font-mono uppercase">NIE: {{ est.nie }}</span>
                 </div>
             </div>
 
             <!-- Botón de Ciclo Principal -->
             <input type="hidden" name="estado_{{ est.id }}" id="input-{{ est.id }}" value="Presente">
-            <button type="button" onclick="cycleStatus({{ est.id }})" id="btn-{{ est.id }}" class="w-full py-6 rounded-2xl border-2 font-black text-sm uppercase tracking-widest transition-all duration-300 shadow-lg active:scale-95 flex flex-col items-center justify-center gap-1">
+            <button type="button" onclick="cycleStatus({{ est.id }})" id="btn-{{ est.id }}" class="w-full py-3 md:py-5 rounded-xl border-2 font-black text-xs md:text-sm uppercase tracking-widest transition-all duration-300 shadow active:scale-95 flex flex-col items-center justify-center gap-1">
                 <span id="label-{{ est.id }}">Presente</span>
-                <span class="text-[9px] opacity-60 font-medium normal-case tracking-normal">Clic para cambiar</span>
+                <span class="text-[8px] md:text-[9px] opacity-60 font-medium normal-case tracking-normal">Clic para cambiar</span>
             </button>
 
             <!-- Sección de Justificación (Expandible) -->
-            <div id="permiso-ui-{{ est.id }}" class="max-h-0 overflow-hidden transition-all duration-500 ease-in-out opacity-0">
-                <div class="pt-4">
-                    <div class="bg-amber-50/50 p-4 rounded-2xl border-2 border-dashed border-amber-200 space-y-3">
+            <div id="permiso-ui-{{ est.id }}" class="overflow-hidden transition-all duration-500 ease-in-out opacity-0" style="max-height: 0px; pointer-events: none;">
+                <div class="pt-3 md:pt-4">
+                    <div class="bg-amber-50/50 p-3 md:p-4 rounded-xl border border-dashed border-amber-200 space-y-3">
                         <div class="flex flex-col">
-                            <label class="text-[10px] font-black text-amber-700 uppercase mb-1 ml-1">Motivo del Permiso</label>
-                            <textarea name="nota_{{ est.id }}" placeholder="Escribe la justificación aquí..." class="w-full text-xs border-amber-100 rounded-xl bg-white h-20 focus:ring-amber-500 focus:border-amber-500 shadow-inner p-3"></textarea>
+                            <label class="text-[9px] md:text-[10px] font-black text-amber-700 uppercase mb-1 ml-1">Motivo del Permiso</label>
+                            <textarea name="nota_{{ est.id }}" placeholder="Escribe la justificación aquí..." class="w-full text-xs border-amber-100 rounded-lg bg-white h-16 md:h-20 focus:ring-amber-500 focus:border-amber-500 shadow-inner p-2 md:p-3"></textarea>
                         </div>
                         <div class="flex flex-col gap-1">
-                            <label class="text-[10px] font-black text-amber-700 uppercase mb-1 ml-1">Comprobante (Imágen/PDF)</label>
+                            <label class="text-[9px] md:text-[10px] font-black text-amber-700 uppercase mb-1 ml-1">Comprobante (Imágen/PDF)</label>
                             <div class="relative group/file">
-                                <input type="file" name="archivo_{{ est.id }}" accept="image/*,.pdf" class="text-[10px] block w-full text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:bg-amber-500 file:text-white hover:file:bg-amber-600 transition-all cursor-pointer">
+                                <input type="file" name="archivo_{{ est.id }}" accept="image/*,.pdf" class="text-[9px] md:text-[10px] block w-full text-slate-500 file:mr-2 file:py-1.5 md:file:py-2 file:px-3 md:file:px-4 file:rounded-lg file:border-0 file:font-black file:bg-amber-500 file:text-white hover:file:bg-amber-600 transition-all cursor-pointer">
                             </div>
                         </div>
                     </div>
@@ -102,17 +102,17 @@
     </div>
 
     <!-- Acciones Finales -->
-    <div class="mt-12 mb-20 flex justify-center">
-        <button type="submit" class="w-full md:w-auto bg-slate-900 text-white px-12 py-5 rounded-3xl font-black text-xl shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4">
-            <span class="bg-emerald-500 w-12 h-12 flex items-center justify-center rounded-2xl text-2xl">💾</span> 
+    <div class="mt-8 md:mt-12 mb-24 md:mb-20 flex justify-center">
+        <button type="submit" class="w-full md:w-auto bg-slate-900 text-white px-8 md:px-12 py-4 md:py-5 rounded-2xl font-black text-lg md:text-xl shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4">
+            <span class="bg-emerald-500 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-xl text-xl md:text-2xl">💾</span> 
             GUARDAR TODA LA ASISTENCIA
         </button>
     </div>
 
     <!-- Botón Flotante -->
-    <div class="fixed bottom-10 right-10 z-50">
-        <button type="submit" class="group bg-slate-900 text-white pl-8 pr-10 py-5 rounded-3xl font-black text-lg shadow-2xl shadow-slate-400 hover:scale-110 active:scale-95 transition-all flex items-center gap-4">
-            <span class="bg-emerald-500 w-12 h-12 flex items-center justify-center rounded-2xl group-hover:rotate-12 transition-transform shadow-lg shadow-emerald-500/30 text-2xl">💾</span> 
+    <div class="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-50">
+        <button type="submit" class="group bg-slate-900 text-white pl-6 pr-8 py-3 md:pl-8 md:pr-10 md:py-4 rounded-2xl font-black text-base md:text-lg shadow-2xl shadow-slate-400 hover:scale-110 active:scale-95 transition-all flex items-center gap-3 md:gap-4">
+            <span class="bg-emerald-500 w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-xl group-hover:rotate-12 transition-transform shadow-lg shadow-emerald-500/30 text-lg md:text-xl">💾</span> 
             <span class="tracking-tight uppercase">Guardar</span>
         </button>
     </div>
@@ -144,7 +144,7 @@ function cycleStatus(estId) {
     label.innerText = nextStatus;
 
     // Resetear y aplicar clases de botón
-    btn.className = `w-full py-6 rounded-2xl border-2 font-black text-sm uppercase tracking-widest transition-all duration-300 shadow-lg active:scale-95 flex flex-col items-center justify-center gap-1 ${CONFIG[nextStatus].btn}`;
+    btn.className = `w-full py-3 md:py-5 rounded-xl border-2 font-black text-xs md:text-sm uppercase tracking-widest transition-all duration-300 shadow active:scale-95 flex flex-col items-center justify-center gap-1 ${CONFIG[nextStatus].btn}`;
     
     // Resetear y aplicar borde de tarjeta
     Object.values(CONFIG).forEach(c => card.classList.remove(c.border));
@@ -154,9 +154,11 @@ function cycleStatus(estId) {
     if (nextStatus === 'Permiso') {
         section.style.maxHeight = '400px';
         section.style.opacity = '1';
+        section.style.pointerEvents = 'auto';
     } else {
-        section.style.maxHeight = '0';
+        section.style.maxHeight = '0px';
         section.style.opacity = '0';
+        section.style.pointerEvents = 'none';
     }
 
     updateGlobalStats();
@@ -191,12 +193,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = document.getElementById(`card-${id}`);
         const section = document.getElementById(`permiso-ui-${id}`);
 
-        btn.className = `w-full py-6 rounded-2xl border-2 font-black text-sm uppercase tracking-widest transition-all duration-300 shadow-lg active:scale-95 flex flex-col items-center justify-center gap-1 ${CONFIG[status].btn}`;
+        btn.className = `w-full py-3 md:py-5 rounded-xl border-2 font-black text-xs md:text-sm uppercase tracking-widest transition-all duration-300 shadow active:scale-95 flex flex-col items-center justify-center gap-1 ${CONFIG[status].btn}`;
         card.classList.add(CONFIG[status].border);
         
         if (status === 'Permiso') {
             section.style.maxHeight = '400px';
             section.style.opacity = '1';
+            section.style.pointerEvents = 'auto';
+        } else {
+            section.style.maxHeight = '0px';
+            section.style.pointerEvents = 'none';
         }
     });
     updateGlobalStats();
@@ -204,7 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <style>
-.student-card { border-width: 3px; border-style: solid; }
 #stat-presente, #stat-ausente, #stat-permiso, #stat-escape { transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); display: inline-block; }
 
 /* Clases de utilidad forzadas para JS */
