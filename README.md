@@ -53,7 +53,7 @@ Un sistema profesional y robusto diseñado para la gestión académica, permitie
 
 1. **Clonar el repositorio:**
    ```bash
-   git clone <url-del-repositorio>
+   git clone [url-del-repositorio>](https://github.com/avismael/teacherApp.gi)
    cd registro_notas
    ```
 
