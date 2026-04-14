@@ -16,14 +16,19 @@ Un sistema profesional y robusto diseñado para la gestión académica, permitie
 - **Rúbricas Detalladas:** Sistema integrado de evaluación basado en criterios y niveles de desempeño.
 - **Notas de Recuperación:** Soporte para procesos de refuerzo académico por periodo.
 
+### 📅 Control de Asistencia
+- **Registro Rápido:** Toma de asistencia (Presente, Ausente, Tarde, Permiso) con interfaz optimizada para móviles (scroll horizontal en tablas).
+- **Reportes de Asistencia:** Visualización de porcentajes e historial de asistencia por estudiante en las secciones y periodos.
+
 ### 📊 Reportes y Análisis
 - **Reporte por Estudiante:** Seguimiento individual del progreso y rendimiento académico.
 - **Reporte por Asignatura:** Análisis grupal de resultados y promedios.
 - **Exportación de Datos:** Capacidad para generar reportes profesionales y limpios.
 
-### 🔒 Integridad y Seguridad
+### 🔒 Integridad y Disponibilidad
 - **Borrado en Cascada:** Protección de integridad referencial para evitar inconsistencias en la base de datos.
 - **Validaciones en Tiempo Real:** Asegura que los datos ingresados sean correctos y consistentes.
+- **100% Offline:** Assets (CSS nativo, fuentes web) previamente localizados, garantizando una funcionalidad completa y de alta velocidad sin conexión a internet.
 
 ---
 
@@ -39,7 +44,7 @@ Un sistema profesional y robusto diseñado para la gestión académica, permitie
 ## 📋 Requisitos Previos
 
 - Python 3.8+
-- Node.js (opcional, para compilación de CSS)
+- Node.js (opcional, solo si deseas modificar y compilar los estilos de Tailwind CSS)
 - Entorno virtual (recomendado)
 
 ---
@@ -122,14 +127,14 @@ Se utiliza dentro de la configuración de una Actividad para definir los criteri
 
 ```text
 registro_notas/
-├── routes/             # Lógica de rutas organizada por módulos
-├── static/             # Archivos estáticos (CSS, JS, Imágenes)
+├── routes/             # Módulos de rutas (asistencia, calificaciones, evaluaciones, etc.)
+├── static/             # Archivos estáticos (CSS, JS, Fuentes, Imágenes) para uso offline
 ├── templates/          # Plantillas Jinja2 (HTML)
 ├── app.py              # Punto de entrada de la aplicación
-├── models.py           # Definición de modelos de base de datos
-├── config.py           # Configuraciones globales
-├── extensions.py       # Inicialización de extensiones (SQLAlchemy)
-└── requirements.txt    # Dependencias del proyecto
+├── models.py           # Modelos de bases de datos
+├── config.py           # Configuraciones globales de la app
+├── extensions.py       # Inicialización de extensiones
+└── requirements.txt    # Dependencias de Python
 ```
 
 ---
