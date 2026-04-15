@@ -6,7 +6,11 @@
     <h1 class="text-3xl font-bold text-slate-800">Módulo de Asistencia</h1>
     <p class="text-slate-500 mt-2">Selecciona un grupo para iniciar el pase de lista del día.</p>
 </div>
-
+<div class="mt-8 mb-8">
+    <a href="{{ url_for('asistencia.historial') }}" class="inline-flex items-center gap-2 text-indigo-600 font-bold hover:underline">
+        <span>📅</span> Ver historial de asistencia
+    </a>
+</div>
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {% for sec in secciones %}
     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 hover:shadow-md transition-all group">
@@ -25,11 +29,5 @@
         <p class="text-slate-500">No hay secciones registradas aún. Crea una en el módulo de Secciones.</p>
     </div>
     {% endfor %}
-</div>
-
-<div class="mt-8">
-    <a href="{{ url_for('asistencia.historial') }}" class="inline-flex items-center gap-2 text-indigo-600 font-bold hover:underline">
-        <span>📅</span> Ver historial de asistencia
-    </a>
 </div>
 {% endblock %}
