@@ -44,7 +44,7 @@
     <h2 class="text-lg font-bold text-slate-800 mb-4">Tus Asignaturas</h2>
     {% if asignaturas %}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {% for a in asignaturas %}
+            {% for a in asignaturas|sort(attribute='nombre') %}
             <a href="{{ url_for('asignaturas.detalle', id=a.id) }}" class="block p-4 rounded-xl border border-slate-200 hover:border-primary hover:shadow-md transition-all group">
                 <h3 class="font-bold text-slate-800 group-hover:text-primary">{{ a.nombre }}</h3>
                 <p class="text-sm text-slate-500 mt-1 line-clamp-2">{{ a.descripcion or 'Sin descripción' }}</p>
