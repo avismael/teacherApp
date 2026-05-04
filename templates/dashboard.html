@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="mb-8">
-    <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">Panel de Control</h1>
+    <h1 class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">Panel de Control</h1>
     <p class="text-slate-500 mt-1">Bienvenido a tu registro de notas, resumen estadístico.</p>
 </div>
 
@@ -41,7 +41,7 @@
 </div>
 
 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-    <h2 class="text-lg font-bold text-slate-800 mb-4">Tus Asignaturas</h2>
+    <h2 class="mb-4">Tus Asignaturas</h2>
     {% if asignaturas %}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {% for a in asignaturas|sort(attribute='nombre') %}

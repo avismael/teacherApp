@@ -21,8 +21,8 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex">
 
-    <!-- Unified App Sidebar -->
-    <aside id="app-sidebar" class="bg-secondary text-white flex flex-col shadow-xl transition-all duration-300 ease-in-out w-20 lg:w-64 flex-shrink-0 z-50 h-screen sticky top-0 group">
+    <!-- Desktop Sidebar (Hidden on mobile) -->
+    <aside id="app-sidebar" class="print:hidden bg-secondary text-white hidden lg:flex flex-col shadow-xl transition-all duration-300 ease-in-out w-64 flex-shrink-0 z-50 h-screen sticky top-0 group">
         
         <!-- Cabecera Logo (Botón Toggle Universal) -->
         <button id="logo-toggle" class="h-16 w-full flex items-center px-2 font-bold text-xl tracking-tight border-b border-slate-700/50 z-20 hover:bg-slate-800 transition-colors focus:outline-none relative group/logo cursor-pointer">
@@ -72,13 +72,20 @@
     <!-- Main Content -->
     <main class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-slate-50 relative">
         
-        <!-- Mobile Top Title (Opcional, solo para ubicar visualmente) -->
-        <header class="h-16 bg-white shadow-sm flex items-center px-6 lg:hidden shrink-0 z-30 sticky top-0 justify-between">
-            <div class="font-bold text-lg text-slate-800 tracking-tight">TeacherApp</div>
-        </header>
-
+        <!-- Mobile Top Header -->
+        <div class="print:hidden mobile-header-bar h-16 bg-white shadow-sm flex items-center px-6 lg:hidden shrink-0 z-[60] sticky top-0 justify-between border-b border-slate-100">
+            <div class="font-bold text-lg text-slate-800 tracking-tight flex items-center gap-2">
+                <span class="text-2xl">👨‍🏫</span>
+                TeacherApp
+            </div>
+            <button id="mobile-menu-btn" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors focus:outline-none flex items-center justify-center">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
         <!-- Flash messages -->
-        <div class="px-8 pt-6">
+        <div class="print:hidden px-8 pt-6">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
@@ -94,6 +101,43 @@
             {% block content %}{% endblock %}
         </div>
     </main>
+
+    <!-- Mobile Full-screen Overlay Menu -->
+    <div id="mobile-menu-overlay" class="fixed inset-0 bg-secondary z-[100] transition-all duration-300 ease-in-out flex flex-col lg:hidden opacity-0 pointer-events-none invisible transform -translate-y-8 hidden">
+        <div class="h-16 flex items-center justify-between px-8 border-b border-white/10">
+            <div class="text-white font-black text-xl flex items-center gap-2">
+                <span class="text-2xl">👨‍🏫</span> TeacherApp
+            </div>
+            <button id="mobile-menu-close" class="p-2 text-white/70 hover:text-white transition-colors focus:outline-none">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <nav class="flex-1 flex flex-col items-center justify-start gap-8 p-8 pt-16 overflow-y-auto">
+            <a href="{{ url_for('dashboard.index') }}" class="mobile-nav-link text-white text-2xl font-bold flex items-center gap-4 hover:text-accent transition-colors">
+                <span>🏠</span> Panel Inicial
+            </a>
+            <a href="{{ url_for('asignaturas.index') }}" class="mobile-nav-link text-white text-2xl font-bold flex items-center gap-4 hover:text-accent transition-colors">
+                <span>📖</span> Asignaturas
+            </a>
+            <a href="{{ url_for('estudiantes.index') }}" class="mobile-nav-link text-white text-2xl font-bold flex items-center gap-4 hover:text-accent transition-colors">
+                <span>🎓</span> Estudiantes
+            </a>
+            <a href="{{ url_for('secciones.index') }}" class="mobile-nav-link text-white text-2xl font-bold flex items-center gap-4 hover:text-accent transition-colors">
+                <span>🏫</span> Secciones
+            </a>
+            <a href="{{ url_for('asistencia.index') }}" class="mobile-nav-link text-white text-2xl font-bold flex items-center gap-4 hover:text-accent transition-colors">
+                <span>📅</span> Asistencia
+            </a>
+            <a href="{{ url_for('reportes.index') }}" class="mobile-nav-link text-white text-2xl font-bold flex items-center gap-4 hover:text-accent transition-colors">
+                <span>📝</span> Reportes
+            </a>
+        </nav>
+        <div class="p-8 border-t border-white/10 text-center">
+            <p class="text-white/40 text-xs font-bold tracking-widest uppercase">&copy; 2026 TeacherApp Pro</p>
+        </div>
+    </div>
 
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>

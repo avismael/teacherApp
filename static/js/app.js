@@ -64,4 +64,44 @@ document.addEventListener('DOMContentLoaded', () => {
             renderSidebar();
         }
     });
+
+    // MOBILE MENU OVERLAY LOGIC
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenuClose = document.getElementById('mobile-menu-close');
+    const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+
+    if (mobileMenuBtn && mobileMenuOverlay) {
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenuOverlay.classList.remove('hidden');
+            // Timeout para permitir que el navegador registre la eliminación de 'hidden' antes de animar
+            setTimeout(() => {
+                mobileMenuOverlay.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-8', 'invisible');
+                mobileMenuOverlay.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0', 'visible');
+            }, 10);
+            document.body.style.overflow = 'hidden'; 
+        });
+    }
+
+    function closeMobileMenu() {
+        if (!mobileMenuOverlay) return;
+        mobileMenuOverlay.classList.add('opacity-0', 'pointer-events-none', '-translate-y-8', 'invisible');
+        mobileMenuOverlay.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0', 'visible');
+        document.body.style.overflow = ''; 
+        // Esperar a que termine la animación antes de poner hidden
+        setTimeout(() => {
+            if (mobileMenuOverlay.classList.contains('opacity-0')) {
+                mobileMenuOverlay.classList.add('hidden');
+            }
+        }, 300);
+    }
+
+    if (mobileMenuClose) {
+        mobileMenuClose.addEventListener('click', closeMobileMenu);
+    }
+
+    // Cerrar al tocar un link
+    mobileNavLinks.forEach(link => {
+        link.addEventListener('click', closeMobileMenu);
+    });
 });

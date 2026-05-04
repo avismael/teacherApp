@@ -14,8 +14,31 @@
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 16px;
 }
+
+/* Desktop scale (default) */
+h1, .h1 { font-size: 2.25rem; line-height: 2.5rem; font-weight: 800; letter-spacing: -0.05em; color: #1e293b; }
+h2, .h2 { font-size: 1.875rem; line-height: 2.25rem; font-weight: 700; letter-spacing: -0.025em; color: #334155; }
+h3, .h3 { font-size: 1.5rem; line-height: 2rem; font-weight: 700; letter-spacing: -0.025em; color: #475569; }
+h4, .h4 { font-size: 1.25rem; line-height: 1.75rem; font-weight: 600; color: #64748b; }
+
+/* Mobile scale adjustments */
+@media (max-width: 1024px) {
+    body { font-size: 15px; }
+    h1, .h1 { font-size: 1.75rem; line-height: 2.125rem; }
+    h2, .h2 { font-size: 1.5rem; line-height: 2rem; }
+    h3, .h3 { font-size: 1.25rem; line-height: 1.75rem; }
+    h4, .h4 { font-size: 1.125rem; line-height: 1.5rem; }
+}
+
+p, .text-body { font-size: 1rem; line-height: 1.7; color: #64748b; }
+.text-xs-alt { font-size: 0.75rem; line-height: 1rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+.text-sm-alt { font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; }
 .glass-panel {
     background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(10px);
@@ -55,9 +78,73 @@ body {
 .stagger-5 { animation-delay: 0.3s; }
 
 .mobile-nav-link {
-    transition: all 0.2s ease-in-out;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
 }
 
-.mobile-nav-link:active {
-    transform: scale(0.95);
+.mobile-nav-link:hover {
+    color: #fbbf24; /* accent color */
+    transform: translateX(10px);
 }
+
+
+.mobile-nav-link:active {
+    transform: scale(0.9);
+}
+
+/* --- REGLAS DE IMPRESIÓN --- */
+@media print {
+    /* Ocultar barra lateral, menús, botones y cabeceras móviles */
+    aside, 
+    nav, 
+    #app-sidebar, 
+    #mobile-menu-overlay, 
+    #mobile-menu-btn,
+    .mobile-header-bar,
+    .print\:hidden,
+    [class*="print:hidden"],
+    .breadcrumb-bar,
+    button {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* Reset total de la estructura de la página */
+    body, html {
+        background: #fff !important;
+        color: #000 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    main, .flex-1 {
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+        margin: 0 !important;
+        padding: 20px !important;
+        background: transparent !important;
+        border: none !important;
+    }
+
+    /* Asegurar que el contenido no se corte */
+    .overflow-auto, .overflow-y-auto, .overflow-x-auto {
+        overflow: visible !important;
+        height: auto !important;
+    }
+
+    /* Estilo para tablas en impresión */
+    table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+    th, td {
+        border: 1px solid #ddd !important;
+        padding: 8px !important;
+    }
+}
+

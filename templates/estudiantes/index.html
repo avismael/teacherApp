@@ -4,7 +4,7 @@
 {% block content %}
 <div class="flex justify-between items-center mb-6">
     <div>
-        <h1 class="text-3xl font-bold text-slate-800">Directorio de Estudiantes</h1>
+        <h1>Directorio de Estudiantes</h1>
         <p class="text-slate-500">Registra y administra los alumnos de tu centro educativo.</p>
     </div>
 </div>
@@ -54,8 +54,9 @@
                     <tr>
                         <th class="px-6 py-4 font-bold text-slate-700 text-sm uppercase tracking-wider">NIE</th>
                         <th class="px-6 py-4 font-bold text-slate-700 text-sm uppercase tracking-wider">Apellidos y Nombres</th>
-                        <th class="px-6 py-4 font-bold text-slate-700 text-sm uppercase tracking-wider">Género</th>
-                        <th class="px-6 py-4 font-bold text-slate-700 text-sm uppercase tracking-wider text-right">Secciones</th>
+                        <th class="px-6 py-4 font-bold text-slate-700 text-sm uppercase tracking-wider">Sección</th>
+                        <th class="px-6 py-4 font-bold text-slate-700 text-sm uppercase tracking-wider text-center">Género</th>
+                        <th class="px-6 py-4 font-bold text-slate-700 text-sm uppercase tracking-wider text-right">Reportes</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -64,27 +65,45 @@
                         <td class="px-6 py-4 text-slate-800 font-bold whitespace-nowrap">{{ est.nie }}</td>
                         <td class="px-6 py-4 text-slate-600 font-medium">{{ est.apellidos }}, {{ est.nombres }}</td>
                         <td class="px-6 py-4">
-                            <span class="px-2 py-1 rounded-full text-xs font-semibold {% if est.genero == 'Masculino' %}bg-blue-100 text-blue-700{% else %}bg-pink-100 text-pink-700{% endif %}">
-                                {{ est.genero }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-right">
                             {% if est.secciones %}
-                                <div class="flex flex-wrap gap-1 justify-end">
+                                <div class="flex flex-wrap gap-1">
                                     {% for sec in est.secciones %}
-                                        <span class="bg-indigo-600 text-white font-bold px-2 py-0.5 rounded text-[10px] uppercase shadow-sm">
+                                        <span class="bg-indigo-50 text-indigo-700 border border-indigo-100 font-bold px-2 py-0.5 rounded text-[10px] uppercase">
                                             {{ sec.nombre }}
                                         </span>
                                     {% endfor %}
                                 </div>
                             {% else %}
-                                <span class="text-slate-400 text-xs italic">Sin matricular</span>
+                                <span class="text-slate-400 text-xs italic">No asignado</span>
                             {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold {% if est.genero == 'Masculino' %}bg-blue-100 text-blue-700{% else %}bg-pink-100 text-pink-700{% endif %}">
+                                {{ est.genero }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <div class="flex justify-end gap-2">
+                                <a href="{{ url_for('reportes.reporte_estudiante', estudiante_id=est.id) }}" 
+                                   title="Reporte de Calificaciones"
+                                   class="p-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white rounded-lg transition-all duration-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/>
+                                    </svg>
+                                </a>
+                                <a href="{{ url_for('reportes.asistencia_estudiante', estudiante_id=est.id) }}" 
+                                   title="Historial de Asistencia"
+                                   class="p-2 bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white rounded-lg transition-all duration-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                                    </svg>
+                                </a>
+                            </div>
                         </td>
                     </tr>
                     {% else %}
                     <tr>
-                         <td colspan="4" class="px-6 py-12 text-center text-slate-500 bg-slate-50/50">
+                         <td colspan="5" class="px-6 py-12 text-center text-slate-500 bg-slate-50/50">
                             <span class="text-4xl block mb-2">🔍</span>
                             No se encontraron estudiantes que coincidan con "{{ stats.q }}".
                          </td>
