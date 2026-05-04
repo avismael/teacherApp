@@ -121,8 +121,8 @@ def importar_estudiantes(seccion_id):
                 
         if len(row) >= 4:
             nie = str(row[0]).strip()
-            nombres = str(row[1]).strip()
-            apellidos = str(row[2]).strip()
+            apellidos = str(row[1]).strip()
+            nombres = str(row[2]).strip()
             genero = str(row[3]).strip()
             
             if not nie:

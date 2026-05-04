@@ -43,10 +43,10 @@
                     <p class="text-xs text-slate-400 mt-1">Si el NIE existe en el directorio general, solo lo añadirá a
                         la sección. Si no, lo creará.</p>
                 </div>
-                <div><input type="text" name="nombres" placeholder="Nombres"
+                <div><input type="text" name="apellidos" placeholder="Apellidos"
                         class="w-full border border-slate-300 rounded px-3 py-2 bg-slate-50 focus:bg-white" required>
                 </div>
-                <div><input type="text" name="apellidos" placeholder="Apellidos"
+                <div><input type="text" name="nombres" placeholder="Nombres"
                         class="w-full border border-slate-300 rounded px-3 py-2 bg-slate-50 focus:bg-white" required>
                 </div>
                 <div>
@@ -68,7 +68,7 @@
                 <span>📁</span> Carga Masiva a Sección
             </h3>
             <p class="text-xs text-indigo-700 mb-4 font-medium">Auto-creará y matriculará a esta sección con tu archivo
-                CSV (NIE, Nombres, Apellidos, Género).</p>
+                CSV (NIE, Apellidos, Nombres, Género).</p>
             <form action="{{ url_for('secciones.importar_estudiantes', seccion_id=seccion.id) }}" method="POST"
                 enctype="multipart/form-data" class="flex flex-col gap-3">
                 <input type="file" name="archivo_csv" accept=".csv"
