@@ -15,6 +15,9 @@
     <!-- Local CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex">
 
@@ -35,27 +38,27 @@
 
         <!-- Links de Navegación -->
         <nav class="flex-1 py-6 flex flex-col gap-2 px-2 overflow-y-auto overflow-x-hidden z-20 tooltip-container">
-            <a href="{{ url_for('dashboard.index') }}" title="Panel Inicial" class="group relative px-2 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if request.endpoint == 'dashboard.index' %}bg-primary hover:bg-primary text-white shadow-md shadow-primary/20{% endif %}">
+            <a href="{{ url_for('dashboard.index') }}" title="Panel Inicial" class="group relative px-2 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if request.endpoint and request.endpoint == 'dashboard.index' %}bg-primary hover:bg-primary text-white shadow-md shadow-primary/20{% endif %}">
                 <span class="text-2xl w-16 text-center flex-shrink-0 group-hover:scale-110 transition-transform">🏠</span>
                 <span class="nav-text font-medium whitespace-nowrap transition-opacity duration-300 lg:opacity-100 opacity-0">Panel Inicial</span>
             </a>
-            <a href="{{ url_for('asignaturas.index') }}" title="Asignaturas" class="group relative px-2 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'asignaturas' in request.endpoint %}bg-slate-800 text-white{% endif %}">
+            <a href="{{ url_for('asignaturas.index') }}" title="Asignaturas" class="group relative px-2 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if request.endpoint and 'asignaturas' in request.endpoint %}bg-slate-800 text-white{% endif %}">
                 <span class="text-2xl w-16 text-center flex-shrink-0 group-hover:scale-110 transition-transform">📖</span>
                 <span class="nav-text font-medium whitespace-nowrap transition-opacity duration-300 lg:opacity-100 opacity-0">Asignaturas</span>
             </a>
-            <a href="{{ url_for('estudiantes.index') }}" title="Estudiantes" class="group relative px-2 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'estudiantes' in request.endpoint %}bg-slate-800 text-white{% endif %}">
+            <a href="{{ url_for('estudiantes.index') }}" title="Estudiantes" class="group relative px-2 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if request.endpoint and 'estudiantes' in request.endpoint %}bg-slate-800 text-white{% endif %}">
                 <span class="text-2xl w-16 text-center flex-shrink-0 group-hover:scale-110 transition-transform">🎓</span>
                 <span class="nav-text font-medium whitespace-nowrap transition-opacity duration-300 lg:opacity-100 opacity-0">Estudiantes</span>
             </a>
-            <a href="{{ url_for('secciones.index') }}" title="Secciones" class="group relative px-2 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'secciones' in request.endpoint %}bg-slate-800 text-white{% endif %}">
+            <a href="{{ url_for('secciones.index') }}" title="Secciones" class="group relative px-2 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if request.endpoint and 'secciones' in request.endpoint %}bg-slate-800 text-white{% endif %}">
                 <span class="text-2xl w-16 text-center flex-shrink-0 group-hover:scale-110 transition-transform">🏫</span>
                 <span class="nav-text font-medium whitespace-nowrap transition-opacity duration-300 lg:opacity-100 opacity-0">Secciones</span>
             </a>
-            <a href="{{ url_for('asistencia.index') }}" title="Asistencia" class="group relative px-2 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'asistencia' in request.endpoint %}bg-slate-800 text-white{% endif %}">
+            <a href="{{ url_for('asistencia.index') }}" title="Asistencia" class="group relative px-2 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if request.endpoint and 'asistencia' in request.endpoint %}bg-slate-800 text-white{% endif %}">
                 <span class="text-2xl w-16 text-center flex-shrink-0 group-hover:scale-110 transition-transform">📅</span>
                 <span class="nav-text font-medium whitespace-nowrap transition-opacity duration-300 lg:opacity-100 opacity-0">Asistencia</span>
             </a>
-            <a href="{{ url_for('reportes.index') }}" title="Reportes" class="group relative px-2 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if 'reportes' in request.endpoint %}bg-slate-800 text-white{% endif %}">
+            <a href="{{ url_for('reportes.index') }}" title="Reportes" class="group relative px-2 py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center {% if request.endpoint and 'reportes' in request.endpoint %}bg-slate-800 text-white{% endif %}">
                 <span class="text-2xl w-16 text-center flex-shrink-0 group-hover:scale-110 transition-transform">📝</span>
                 <span class="nav-text font-medium whitespace-nowrap transition-opacity duration-300 lg:opacity-100 opacity-0">Reportes</span>
             </a>
@@ -94,6 +97,30 @@
 
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script>
+        document.addEventListener('submit', function(e) {
+            let form = e.target;
+            let confirmText = form.getAttribute('data-confirm');
+            if (confirmText && !form.dataset.confirmed) {
+                e.preventDefault();
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: confirmText,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#4F46E5', // primary color
+                    cancelButtonColor: '#ef4444',  // red color
+                    confirmButtonText: 'Sí, continuar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.dataset.confirmed = true;
+                        form.submit();
+                    }
+                });
+            }
+        });
+    </script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

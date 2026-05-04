@@ -157,10 +157,21 @@
     }
     
     function borrarCriterio(cIndex) {
-        if(confirm('¿Borrar criterio completo?')) {
-            criterios.splice(cIndex, 1);
-            renderizarConstructor();
-        }
+        Swal.fire({
+            title: '¿Borrar criterio completo?',
+            text: "Esta acción no se puede deshacer",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#94a3b8',
+            confirmButtonText: 'Sí, borrar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if(result.isConfirmed) {
+                criterios.splice(cIndex, 1);
+                renderizarConstructor();
+            }
+        });
     }
     
     function agregarNivel(cIndex) {
@@ -186,10 +197,9 @@
             },
             body: JSON.stringify({ criterios: criterios })
         }).then(res => res.json()).then(data => {
-            if(data.success) {
-                alert("¡Rúbrica guardada exitosamente!");
+            Swal.fire('¡Éxito!', '¡Rúbrica guardada exitosamente!', 'success').then(() => {
                 window.location.reload();
-            }
+            });
         });
     }
 

@@ -47,7 +47,7 @@
                     <a href="{{ url_for('asistencia.editar', id=asis.id) }}" class="p-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition" title="Editar">
                         ✏️
                     </a>
-                    <form action="{{ url_for('asistencia.eliminar', id=asis.id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este registro de asistencia? Esta acción no se puede deshacer.')" class="inline">
+                    <form action="{{ url_for('asistencia.eliminar', id=asis.id) }}" method="POST" data-confirm="¿Estás seguro de eliminar este registro de asistencia? Esta acción no se puede deshacer." class="inline">
                         <button type="submit" class="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition" title="Eliminar">
                             🗑️
                         </button>

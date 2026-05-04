@@ -77,7 +77,12 @@ def crear_y_matricular(seccion_id):
         return redirect(url_for('secciones.detalle', id=seccion.id))
         
     est = Estudiante.query.filter_by(nie=nie).first()
-    if not est:
+    if est:
+        if est.secciones and seccion not in est.secciones:
+            nombres_secciones = ", ".join([s.nombre for s in est.secciones])
+            flash(f'El estudiante con NIE {nie} ya está matriculado en otra sección ({nombres_secciones}).', 'error')
+            return redirect(url_for('secciones.detalle', id=seccion.id))
+    else:
         est = Estudiante(nie=nie, nombres=nombres, apellidos=apellidos, genero=genero)
         db.session.add(est)
         
@@ -86,7 +91,7 @@ def crear_y_matricular(seccion_id):
         db.session.commit()
         flash('Estudiante añadido y matriculado exitosamente en el grupo.', 'success')
     else:
-        db.session.commit() # por si se creo nuevo localmente (aunque el if asegura agregarlo al seccion en otro caso, pero bueno)
+        db.session.commit()
         flash('El estudiante ya estaba registrado y matriculado en el grupo.', 'success')
         
     return redirect(url_for('secciones.detalle', id=seccion.id))
@@ -105,6 +110,7 @@ def importar_estudiantes(seccion_id):
     
     registrados_nuevos = 0
     matriculados = 0
+    errores_matricula = 0
     header_skipped = False
     
     for row in csv_input:
@@ -126,14 +132,22 @@ def importar_estudiantes(seccion_id):
             if not est:
                 est = Estudiante(nie=nie, nombres=nombres, apellidos=apellidos, genero=genero)
                 db.session.add(est)
+                db.session.flush()
                 registrados_nuevos += 1
+            else:
+                if est.secciones and seccion not in est.secciones:
+                    errores_matricula += 1
+                    continue
                 
             if est not in seccion.estudiantes:
                 seccion.estudiantes.append(est)
                 matriculados += 1
                 
     db.session.commit()
-    flash(f'Carga masiva completada: {matriculados} matriculados ({registrados_nuevos} estudiantes creados desde cero).', 'success')
+    if errores_matricula > 0:
+        flash(f'Carga masiva completada: {matriculados} matriculados ({registrados_nuevos} nuevos). Se omitieron {errores_matricula} estudiantes porque ya estaban en otra sección.', 'warning')
+    else:
+        flash(f'Carga masiva completada: {matriculados} matriculados ({registrados_nuevos} estudiantes creados desde cero).', 'success')
     return redirect(url_for('secciones.detalle', id=seccion.id))
 
 @secciones_bp.route('/<int:seccion_id>/editar_estudiante/<int:est_id>', methods=['GET', 'POST'])

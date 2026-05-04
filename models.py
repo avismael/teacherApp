@@ -34,6 +34,8 @@ class Estudiante(db.Model):
     nombres = db.Column(db.String(100), nullable=False)
     
     notas = db.relationship('Nota', backref='estudiante', lazy=True, cascade="all, delete-orphan")
+    notas_recuperacion = db.relationship('NotaRecuperacion', backref='estudiante', lazy=True, cascade="all, delete-orphan")
+    rubricas_evaluacion = db.relationship('RubricaEvaluacion', backref='estudiante', lazy=True, cascade="all, delete-orphan")
 
 class Periodo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -110,4 +112,4 @@ class AsistenciaDetalle(db.Model):
     nota = db.Column(db.Text, nullable=True)
     archivo_justificacion = db.Column(db.String(255), nullable=True)
     
-    estudiante = db.relationship('Estudiante', backref=db.backref('registros_asistencia', lazy=True))
+    estudiante = db.relationship('Estudiante', backref=db.backref('registros_asistencia', lazy=True, cascade="all, delete-orphan"))

@@ -45,7 +45,7 @@
                             </svg>
                         </a>
                         <form action="{{ url_for('secciones.eliminar', id=sec.id) }}" method="POST"
-                            onsubmit="return confirm('¿Estás seguro de eliminar esta sección? Se aplicarán restricciones si existen alumnos o vínculos.')"
+                            data-confirm="¿Estás seguro de eliminar esta sección? Se aplicarán restricciones si existen alumnos o vínculos."
                             class="inline">
                             <button type="submit"
                                 class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"

@@ -110,7 +110,7 @@
                                 <form
                                     action="{{ url_for('secciones.remover_estudiante', seccion_id=seccion.id, est_id=est.id) }}"
                                     method="POST"
-                                    onsubmit="return confirm('¿Estás seguro de que deseas eliminar permanentemente a este estudiante? Esta acción no se puede deshacer y borrará todas sus notas y registros de todas las secciones.')">
+                                    data-confirm="¿Estás seguro de que deseas eliminar permanentemente a este estudiante? Esta acción no se puede deshacer y borrará todas sus notas y registros de todas las secciones.">
                                     <button type="submit"
                                         class="text-red-600 hover:text-red-800 font-bold px-3 py-1 bg-red-50 hover:bg-red-100 rounded-lg transition-colors border border-red-100">Eliminar</button>
                                 </form>
