@@ -1,0 +1,87 @@
+@startuml
+title TeacherApp - Diagrama de Componentes
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+actor "Docente" as Docente
+
+package "Frontend" {
+  [Base Template\nJinja2] as BaseTemplate
+  [Vistas HTML\nTemplates] as Templates
+  [JS Navegacion\nstatic/js/app.js] as AppJS
+  [CSS Tailwind\nstatic/css] as CSS
+}
+
+package "Aplicacion Flask" {
+  [app.py\ncreate_app()] as App
+  [Blueprint Dashboard] as DashboardBP
+  [Blueprint Asignaturas] as AsignaturasBP
+  [Blueprint Secciones] as SeccionesBP
+  [Blueprint Estudiantes] as EstudiantesBP
+  [Blueprint Evaluaciones] as EvaluacionesBP
+  [Blueprint Calificaciones] as CalificacionesBP
+  [Blueprint Asistencia] as AsistenciaBP
+  [Blueprint Reportes] as ReportesBP
+}
+
+package "Dominio y Persistencia" {
+  [SQLAlchemy db] as DBExt
+  [models.py] as Models
+  database "SQLite\nnotas_v5.db" as SQLite
+}
+
+package "Servicios Tecnicos" {
+  [Exportacion Excel\nopenpyxl] as Excel
+  [Exportacion PDF\nxhtml2pdf] as PDF
+  [Archivos Adjuntos\nstatic/uploads/asistencia] as Uploads
+}
+
+Docente --> Templates
+Templates --> BaseTemplate
+Templates --> AppJS
+Templates --> CSS
+
+Templates --> DashboardBP
+Templates --> AsignaturasBP
+Templates --> SeccionesBP
+Templates --> EstudiantesBP
+Templates --> EvaluacionesBP
+Templates --> CalificacionesBP
+Templates --> AsistenciaBP
+Templates --> ReportesBP
+
+App --> DashboardBP
+App --> AsignaturasBP
+App --> SeccionesBP
+App --> EstudiantesBP
+App --> EvaluacionesBP
+App --> CalificacionesBP
+App --> AsistenciaBP
+App --> ReportesBP
+App --> DBExt
+
+DashboardBP --> Models
+AsignaturasBP --> Models
+SeccionesBP --> Models
+EstudiantesBP --> Models
+EvaluacionesBP --> Models
+CalificacionesBP --> Models
+AsistenciaBP --> Models
+ReportesBP --> Models
+
+Models --> DBExt
+DBExt --> SQLite
+
+ReportesBP --> Excel
+AsistenciaBP --> PDF
+AsistenciaBP --> Uploads
+
+note right of App
+Inicializa configuracion,
+registra blueprints,
+crea tablas y asegura
+el directorio de uploads.
+end note
+
+@enduml

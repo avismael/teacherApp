@@ -139,5 +139,23 @@ registro_notas/
 
 ---
 
+## 📚 Documentación
+
+La documentación funcional y técnica creada para esta app está disponible en:
+
+1. `docs/product-book.md`: book product completo de TeacherApp.
+2. `docs/mapa-funcional.md`: mapa funcional de módulos, navegación y dependencias.
+3. `docs/uml/README.md`: índice de diagramas UML.
+4. `docs/uml/componentes.puml`: diagrama de componentes.
+5. `docs/uml/casos-uso.puml`: diagrama de casos de uso.
+6. `docs/uml/modelo-dominio.puml`: diagrama de clases del dominio.
+7. `docs/uml/erd.puml`: esquema entidad-relación completo.
+8. `docs/uml/flujo-calificaciones.puml`: secuencia de registro de notas y recuperaciones.
+9. `docs/uml/flujo-rubricas.puml`: secuencia de diseño y aplicación de rúbricas.
+10. `docs/uml/flujo-asistencia.puml`: secuencia de toma y gestión de asistencia.
+11. `docs/uml/actividad-reportes.puml`: flujo de generación de reportes.
+
+---
+
 ## ✒️ Autor
 Desarrollado con ❤️ para mejorar la gestión educativa.

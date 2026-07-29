@@ -1,0 +1,72 @@
+@startuml
+title TeacherApp - Secuencia de Asistencia
+
+actor Docente
+participant "UI Asistencia" as UI
+participant "Blueprint Asistencia" as AsistenciaBP
+participant "Models ORM" as ORM
+participant "Filesystem\nUploads" as FS
+participant "PDF Engine\nxhtml2pdf" as PDF
+database SQLite
+
+== Registro ==
+Docente -> UI : Selecciona seccion y abre toma
+UI -> AsistenciaBP : GET /tomar/<seccion_id>
+AsistenciaBP -> ORM : Obtener seccion y estudiantes
+ORM -> SQLite : SELECT
+AsistenciaBP --> UI : Formulario de asistencia
+
+Docente -> UI : Completa estados y adjuntos
+UI -> AsistenciaBP : POST /guardar
+AsistenciaBP -> ORM : INSERT Asistencia
+ORM -> SQLite : INSERT asistencia
+
+loop por estudiante de la seccion
+  alt existe adjunto
+    AsistenciaBP -> FS : Guardar archivo de justificacion
+  end
+  AsistenciaBP -> ORM : INSERT AsistenciaDetalle
+end
+
+AsistenciaBP -> ORM : commit
+ORM -> SQLite : COMMIT
+AsistenciaBP --> UI : Redirect a historial
+
+== Edicion ==
+Docente -> UI : Abre asistencia existente
+UI -> AsistenciaBP : GET /editar/<id>
+AsistenciaBP -> ORM : Obtener asistencia, seccion y estudiantes
+ORM -> SQLite : SELECT
+AsistenciaBP --> UI : Formulario precargado
+
+Docente -> UI : Modifica estados o adjuntos
+UI -> AsistenciaBP : POST /editar/<id>
+loop por estudiante
+  alt se sube nuevo adjunto
+    AsistenciaBP -> FS : Eliminar adjunto viejo si existe
+    AsistenciaBP -> FS : Guardar nuevo adjunto
+  end
+  AsistenciaBP -> ORM : UPDATE detalle
+end
+AsistenciaBP -> ORM : commit
+ORM -> SQLite : COMMIT
+
+== PDF ==
+Docente -> UI : Solicita PDF
+UI -> AsistenciaBP : GET /reporte_pdf/<id>
+AsistenciaBP -> ORM : Obtener asistencia y estadisticas
+ORM -> SQLite : SELECT
+AsistenciaBP -> PDF : Renderizar HTML a PDF
+PDF --> AsistenciaBP : Bytes PDF
+AsistenciaBP --> UI : Descarga PDF
+
+== Eliminacion ==
+Docente -> UI : Elimina registro
+UI -> AsistenciaBP : POST /eliminar/<id>
+AsistenciaBP -> FS : Eliminar adjuntos asociados
+AsistenciaBP -> ORM : DELETE asistencia
+ORM -> SQLite : DELETE + cascada detalles
+AsistenciaBP -> ORM : commit
+ORM -> SQLite : COMMIT
+
+@enduml

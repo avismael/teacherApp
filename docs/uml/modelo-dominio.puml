@@ -1,0 +1,142 @@
+@startuml
+title TeacherApp - Modelo de Dominio
+
+hide methods
+skinparam classAttributeIconSize 0
+
+class Asignatura {
+  +id: Integer
+  +nombre: String(100)
+  +descripcion: Text?
+}
+
+class Seccion {
+  +id: Integer
+  +nombre: String(50)
+}
+
+class Estudiante {
+  +id: Integer
+  +nie: String(20)
+  +genero: String(20)
+  +apellidos: String(100)
+  +nombres: String(100)
+}
+
+class Periodo {
+  +id: Integer
+  +nombre: String(50)
+  +fecha_inicio: Date?
+  +fecha_fin: Date?
+  +asignatura_id: Integer
+}
+
+class Actividad {
+  +id: Integer
+  +nombre: String(100)
+  +ponderacion: Float
+  +periodo_id: Integer
+}
+
+class Nota {
+  +id: Integer
+  +valor: Float
+  +actividad_id: Integer
+  +estudiante_id: Integer
+  --
+  UC(actividad_id, estudiante_id)
+}
+
+class RubricaCriterio {
+  +id: Integer
+  +nombre: String(150)
+  +actividad_id: Integer
+}
+
+class RubricaNivel {
+  +id: Integer
+  +nombre: String(100)
+  +descripcion: Text?
+  +puntaje: Float
+  +criterio_id: Integer
+}
+
+class RubricaEvaluacion {
+  +id: Integer
+  +estudiante_id: Integer
+  +actividad_id: Integer
+  +criterio_id: Integer
+  +nivel_id: Integer
+  --
+  UC(estudiante_id, criterio_id)
+}
+
+class NotaRecuperacion {
+  +id: Integer
+  +valor: Float
+  +periodo_id: Integer
+  +estudiante_id: Integer
+  --
+  UC(periodo_id, estudiante_id)
+}
+
+class Asistencia {
+  +id: Integer
+  +seccion_id: Integer
+  +fecha: Date
+  +hora: Time
+  +turno: String(20)
+}
+
+class AsistenciaDetalle {
+  +id: Integer
+  +asistencia_id: Integer
+  +estudiante_id: Integer
+  +estado: String(20)
+  +nota: Text?
+  +archivo_justificacion: String(255)?
+}
+
+class Inscripciones <<table>> {
+  +estudiante_id: Integer
+  +seccion_id: Integer
+}
+
+class AsignaturasSecciones <<table>> {
+  +asignatura_id: Integer
+  +seccion_id: Integer
+}
+
+Asignatura "1" -- "0..*" Periodo
+Periodo "1" -- "0..*" Actividad
+Actividad "1" -- "0..*" Nota
+Estudiante "1" -- "0..*" Nota
+
+Actividad "1" -- "0..*" RubricaCriterio
+RubricaCriterio "1" -- "0..*" RubricaNivel
+Estudiante "1" -- "0..*" RubricaEvaluacion
+Actividad "1" -- "0..*" RubricaEvaluacion
+RubricaCriterio "1" -- "0..*" RubricaEvaluacion
+RubricaNivel "1" -- "0..*" RubricaEvaluacion
+
+Periodo "1" -- "0..*" NotaRecuperacion
+Estudiante "1" -- "0..*" NotaRecuperacion
+
+Seccion "1" -- "0..*" Asistencia
+Asistencia "1" -- "0..*" AsistenciaDetalle
+Estudiante "1" -- "0..*" AsistenciaDetalle
+
+Asignatura "0..*" -- "0..*" Seccion : asignaturas_secciones
+Seccion "0..*" -- "0..*" Estudiante : inscripciones
+
+note bottom of NotaRecuperacion
+La recuperacion se topa a 6.0
+en la logica de guardado.
+end note
+
+note bottom of Actividad
+La suma de ponderaciones por periodo
+no debe exceder 100.
+end note
+
+@enduml

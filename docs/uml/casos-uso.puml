@@ -1,0 +1,51 @@
+@startuml
+title TeacherApp - Casos de Uso
+
+left to right direction
+
+actor "Docente" as Docente
+
+rectangle TeacherApp {
+  usecase "Consultar dashboard" as UC1
+  usecase "Gestionar asignaturas" as UC2
+  usecase "Vincular secciones\na asignaturas" as UC3
+  usecase "Gestionar secciones" as UC4
+  usecase "Gestionar estudiantes" as UC5
+  usecase "Importar estudiantes CSV" as UC6
+  usecase "Crear periodos" as UC7
+  usecase "Crear actividades" as UC8
+  usecase "Diseñar rubricas" as UC9
+  usecase "Importar rubricas CSV" as UC10
+  usecase "Registrar calificaciones" as UC11
+  usecase "Registrar recuperaciones" as UC12
+  usecase "Evaluar por rubrica" as UC13
+  usecase "Tomar asistencia" as UC14
+  usecase "Editar asistencia" as UC15
+  usecase "Generar PDF de asistencia" as UC16
+  usecase "Consultar reportes academicos" as UC17
+  usecase "Exportar Excel" as UC18
+  usecase "Consultar reportes\nde asistencia" as UC19
+}
+
+Docente --> UC1
+Docente --> UC2
+Docente --> UC4
+Docente --> UC5
+Docente --> UC7
+Docente --> UC8
+Docente --> UC9
+Docente --> UC11
+Docente --> UC14
+Docente --> UC17
+Docente --> UC19
+
+UC2 .> UC3 : <<include>>
+UC5 .> UC6 : <<extend>>
+UC9 .> UC10 : <<extend>>
+UC11 .> UC12 : <<include>>
+UC11 .> UC13 : <<extend>>
+UC14 .> UC15 : <<extend>>
+UC14 .> UC16 : <<extend>>
+UC17 .> UC18 : <<extend>>
+
+@enduml

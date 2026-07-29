@@ -1,0 +1,69 @@
+@startuml
+title TeacherApp - Secuencia de Rubricas
+
+actor Docente
+participant "UI Rubrica Builder" as UI
+participant "Blueprint Evaluaciones" as Evaluaciones
+participant "Blueprint Calificaciones API" as CalificacionesAPI
+participant "Models ORM" as ORM
+database SQLite
+
+== Diseno de rubrica ==
+Docente -> UI : Abre builder de rubrica
+UI -> Evaluaciones : GET /actividad/<actividad_id>/rubrica
+Evaluaciones -> ORM : Obtener actividad
+ORM -> SQLite : SELECT actividad
+Evaluaciones --> UI : Render builder
+
+Docente -> UI : Guarda criterios y niveles
+UI -> Evaluaciones : POST /actividad/<actividad_id>/rubrica/guardar (JSON)
+Evaluaciones -> ORM : Cargar actividad y criterios actuales
+Evaluaciones -> ORM : Eliminar criterios previos
+ORM -> SQLite : DELETE rubrica_criterio + cascada niveles
+
+loop por criterio recibido
+  Evaluaciones -> ORM : INSERT RubricaCriterio
+  loop por nivel recibido
+    Evaluaciones -> ORM : INSERT RubricaNivel
+  end
+end
+
+Evaluaciones -> ORM : commit
+ORM -> SQLite : COMMIT
+Evaluaciones --> UI : { success: true }
+
+== Evaluacion por rubrica ==
+Docente -> UI : Solicita rubrica de estudiante
+UI -> CalificacionesAPI : GET /api/rubrica/<actividad_id>/<estudiante_id>
+CalificacionesAPI -> ORM : Obtener actividad y evaluaciones previas
+ORM -> SQLite : SELECT
+CalificacionesAPI --> UI : criterios + niveles + seleccion previa
+
+Docente -> UI : Selecciona niveles y guarda
+UI -> CalificacionesAPI : POST /api/rubrica/<actividad_id>/<estudiante_id>/guardar
+CalificacionesAPI -> ORM : Borrar evaluacion previa del estudiante en la actividad
+ORM -> SQLite : DELETE rubrica_evaluacion
+
+loop por criterio seleccionado
+  CalificacionesAPI -> ORM : Obtener nivel
+  ORM -> SQLite : SELECT rubrica_nivel
+  CalificacionesAPI -> CalificacionesAPI : Acumular puntaje
+  CalificacionesAPI -> ORM : INSERT RubricaEvaluacion
+end
+
+CalificacionesAPI -> ORM : Upsert Nota de actividad con puntaje total
+ORM -> SQLite : INSERT/UPDATE nota
+CalificacionesAPI -> ORM : commit
+ORM -> SQLite : COMMIT
+CalificacionesAPI --> UI : { success: true, nota_final }
+
+note right of Evaluaciones
+Guardar una rubrica reemplaza la estructura anterior.
+end note
+
+note right of CalificacionesAPI
+La nota final de la actividad es la suma
+de los puntajes de niveles seleccionados.
+end note
+
+@enduml

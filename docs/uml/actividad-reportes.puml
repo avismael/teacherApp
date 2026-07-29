@@ -1,0 +1,61 @@
+@startuml
+title TeacherApp - Actividad de Reportes
+
+start
+
+:Ingresar al modulo Reportes;
+
+if (Tipo de reporte?) then (Asignatura)
+  :Seleccionar asignatura y seccion;
+  :Calcular resumen por estudiante;
+  :Aplicar recuperacion topada;
+  :Promediar nota final por periodos;
+  if (Exportar Excel?) then (Si)
+    :Generar workbook con openpyxl;
+    :Descargar archivo XLSX;
+  else (No)
+    :Mostrar reporte HTML;
+  endif
+
+elseif (Seccion)
+  :Seleccionar seccion;
+  :Obtener asignaturas vinculadas;
+  :Construir matriz estudiante x asignatura;
+  if (Exportar consolidado?) then (Si)
+    :Generar Excel consolidado;
+    :Descargar XLSX;
+  else (No)
+    :Mostrar reporte HTML;
+  endif
+
+elseif (Estudiante)
+  :Seleccionar estudiante;
+  :Recorrer secciones del estudiante;
+  :Recorrer asignaturas de cada seccion;
+  :Consolidar detalle academico;
+  :Mostrar reporte individual;
+
+elseif (Planificacion)
+  :Seleccionar periodo;
+  :Mostrar planificacion imprimible;
+
+elseif (Rubrica)
+  :Seleccionar actividad;
+  :Mostrar rubrica imprimible;
+
+elseif (Asistencia por seccion)
+  :Seleccionar seccion;
+  :Consultar asistencias y detalles;
+  :Calcular porcentajes por estudiante;
+  :Mostrar reporte de asistencia;
+
+else (Asistencia por estudiante)
+  :Seleccionar estudiante;
+  :Consultar historial de asistencia;
+  :Calcular estadisticas globales;
+  :Mostrar reporte individual de asistencia;
+endif
+
+stop
+
+@enduml

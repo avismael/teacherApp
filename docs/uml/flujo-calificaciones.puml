@@ -1,0 +1,53 @@
+@startuml
+title TeacherApp - Secuencia de Calificaciones
+
+actor Docente
+participant "UI Grid\ncalificaciones/grid.html" as UI
+participant "Blueprint Calificaciones" as Calificaciones
+participant "Models ORM" as ORM
+database SQLite
+
+Docente -> UI : Abre grid de asignatura y seccion
+UI -> Calificaciones : GET /grid/<asignatura_id>/<seccion_id>
+Calificaciones -> ORM : Buscar asignatura y seccion
+Calificaciones -> ORM : Verificar vinculacion seccion-asignatura
+Calificaciones -> ORM : Obtener periodos, actividades, notas y recuperaciones
+ORM -> SQLite : SELECT
+SQLite --> ORM : datos
+ORM --> Calificaciones : entidades y valores
+Calificaciones --> UI : Renderizar grid precargado
+
+Docente -> UI : Edita notas y recuperaciones
+UI -> Calificaciones : POST /grid/<asignatura_id>/<seccion_id>/guardar
+
+loop por campo del formulario
+  Calificaciones -> Calificaciones : Detectar prefijo nota_ o recup_
+  alt nota de actividad
+    Calificaciones -> ORM : Buscar Nota por estudiante y actividad
+    alt existe
+      ORM -> SQLite : UPDATE nota
+    else no existe
+      ORM -> SQLite : INSERT nota
+    end
+  else recuperacion
+    Calificaciones -> Calificaciones : Topar valor maximo a 6.0
+    Calificaciones -> ORM : Buscar NotaRecuperacion por estudiante y periodo
+    alt existe
+      ORM -> SQLite : UPDATE nota_recuperacion
+    else no existe
+      ORM -> SQLite : INSERT nota_recuperacion
+    end
+  end
+end
+
+Calificaciones -> ORM : commit
+ORM -> SQLite : COMMIT
+Calificaciones --> UI : Redirect con mensaje de exito
+
+note right of Calificaciones
+La recuperacion se guarda topada a 6.0.
+El grid solo debe abrirse si la seccion
+esta vinculada a la asignatura.
+end note
+
+@enduml

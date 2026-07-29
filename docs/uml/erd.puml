@@ -1,0 +1,152 @@
+@startuml
+title TeacherApp - ERD
+
+hide methods
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+entity "asignatura" as asignatura {
+  * id : int <<PK>>
+  --
+  nombre : string(100)
+  descripcion : text
+}
+
+entity "seccion" as seccion {
+  * id : int <<PK>>
+  --
+  nombre : string(50)
+}
+
+entity "estudiante" as estudiante {
+  * id : int <<PK>>
+  --
+  nie : string(20) <<UQ>>
+  genero : string(20)
+  apellidos : string(100)
+  nombres : string(100)
+}
+
+entity "periodo" as periodo {
+  * id : int <<PK>>
+  --
+  nombre : string(50)
+  fecha_inicio : date
+  fecha_fin : date
+  asignatura_id : int <<FK>>
+}
+
+entity "actividad" as actividad {
+  * id : int <<PK>>
+  --
+  nombre : string(100)
+  ponderacion : float
+  periodo_id : int <<FK>>
+}
+
+entity "nota" as nota {
+  * id : int <<PK>>
+  --
+  valor : float
+  actividad_id : int <<FK>>
+  estudiante_id : int <<FK>>
+  UC : (actividad_id, estudiante_id)
+}
+
+entity "rubrica_criterio" as rubrica_criterio {
+  * id : int <<PK>>
+  --
+  nombre : string(150)
+  actividad_id : int <<FK>>
+}
+
+entity "rubrica_nivel" as rubrica_nivel {
+  * id : int <<PK>>
+  --
+  nombre : string(100)
+  descripcion : text
+  puntaje : float
+  criterio_id : int <<FK>>
+}
+
+entity "rubrica_evaluacion" as rubrica_evaluacion {
+  * id : int <<PK>>
+  --
+  estudiante_id : int <<FK>>
+  actividad_id : int <<FK>>
+  criterio_id : int <<FK>>
+  nivel_id : int <<FK>>
+  UC : (estudiante_id, criterio_id)
+}
+
+entity "nota_recuperacion" as nota_recuperacion {
+  * id : int <<PK>>
+  --
+  valor : float
+  periodo_id : int <<FK>>
+  estudiante_id : int <<FK>>
+  UC : (periodo_id, estudiante_id)
+}
+
+entity "asistencia" as asistencia {
+  * id : int <<PK>>
+  --
+  seccion_id : int <<FK>>
+  fecha : date
+  hora : time
+  turno : string(20)
+}
+
+entity "asistencia_detalle" as asistencia_detalle {
+  * id : int <<PK>>
+  --
+  asistencia_id : int <<FK>>
+  estudiante_id : int <<FK>>
+  estado : string(20)
+  nota : text
+  archivo_justificacion : string(255)
+}
+
+entity "inscripciones" as inscripciones {
+  * estudiante_id : int <<PK,FK>>
+  * seccion_id : int <<PK,FK>>
+}
+
+entity "asignaturas_secciones" as asignaturas_secciones {
+  * asignatura_id : int <<PK,FK>>
+  * seccion_id : int <<PK,FK>>
+}
+
+asignatura ||--o{ periodo
+periodo ||--o{ actividad
+actividad ||--o{ nota
+estudiante ||--o{ nota
+
+actividad ||--o{ rubrica_criterio
+rubrica_criterio ||--o{ rubrica_nivel
+estudiante ||--o{ rubrica_evaluacion
+actividad ||--o{ rubrica_evaluacion
+rubrica_criterio ||--o{ rubrica_evaluacion
+rubrica_nivel ||--o{ rubrica_evaluacion
+
+periodo ||--o{ nota_recuperacion
+estudiante ||--o{ nota_recuperacion
+
+seccion ||--o{ asistencia
+asistencia ||--o{ asistencia_detalle
+estudiante ||--o{ asistencia_detalle
+
+asignatura ||--o{ asignaturas_secciones
+seccion ||--o{ asignaturas_secciones
+estudiante ||--o{ inscripciones
+seccion ||--o{ inscripciones
+
+note bottom of asignaturas_secciones
+Relacion N:M entre asignaturas y secciones.
+end note
+
+note bottom of inscripciones
+Relacion N:M entre estudiantes y secciones.
+end note
+
+@enduml
