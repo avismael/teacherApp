@@ -155,6 +155,16 @@ La documentación funcional y técnica creada para esta app está disponible en:
 10. `docs/uml/flujo-asistencia.puml`: secuencia de toma y gestión de asistencia.
 11. `docs/uml/actividad-reportes.puml`: flujo de generación de reportes.
 
+### Vista previa UML
+
+Vista completa con imágenes renderizadas:
+
+1. `docs/uml/README.md`
+
+Preview de arquitectura:
+
+![Diagrama de componentes de TeacherApp](docs/uml/img/componentes.svg)
+
 ---
 
 ## ✒️ Autor
