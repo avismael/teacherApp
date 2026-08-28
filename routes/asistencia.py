@@ -9,6 +9,10 @@ import io
 
 asistencia_bp = Blueprint('asistencia', __name__)
 
+
+def _turno_desde_hora(hora):
+    return 'Matutino' if hora.hour < 12 else 'Vespertino'
+
 @asistencia_bp.route('/')
 def index():
     secciones = Seccion.query.all()
@@ -19,11 +23,13 @@ def tomar(seccion_id):
     seccion = Seccion.query.get_or_404(seccion_id)
     estudiantes = sorted(seccion.estudiantes, key=lambda x: x.apellidos)
     now = datetime.now()
+    turno_actual = _turno_desde_hora(now)
     return render_template('asistencia/tomar.html', 
                            seccion=seccion, 
                            estudiantes=estudiantes, 
                            fecha_actual=now.strftime('%Y-%m-%d'),
-                           hora_actual=now.strftime('%H:%M'))
+                           hora_actual=now.strftime('%H:%M'),
+                           turno_actual=turno_actual)
 
 @asistencia_bp.route('/guardar', methods=['POST'])
 def guardar():
@@ -98,6 +104,12 @@ def detalle(id):
         'Permiso': {'total': 0, 'M': 0, 'F': 0},
         'Escape': {'total': 0, 'M': 0, 'F': 0}
     }
+    estudiantes_por_estado = {
+        'Presente': [],
+        'Ausente': [],
+        'Permiso': [],
+        'Escape': []
+    }
     for d in asistencia.detalles:
         stats[d.estado]['total'] += 1
         gen = d.estudiante.genero.upper() if d.estudiante.genero else ''
@@ -105,8 +117,17 @@ def detalle(id):
             stats[d.estado]['M'] += 1
         elif gen in ['FEMENINO', 'F']:
             stats[d.estado]['F'] += 1
+        estudiantes_por_estado[d.estado].append(f"{d.estudiante.apellidos}, {d.estudiante.nombres}")
+
+    for estado in estudiantes_por_estado:
+        estudiantes_por_estado[estado].sort(key=lambda nombre: nombre.lower())
         
-    return render_template('asistencia/detalle.html', asistencia=asistencia, stats=stats)
+    return render_template(
+        'asistencia/detalle.html',
+        asistencia=asistencia,
+        stats=stats,
+        estudiantes_por_estado=estudiantes_por_estado,
+    )
 
 @asistencia_bp.route('/reporte_pdf/<int:id>')
 def reporte_pdf(id):

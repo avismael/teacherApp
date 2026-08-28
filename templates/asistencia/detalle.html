@@ -30,26 +30,70 @@
 
 <!-- Dashboard de Estadísticas Reales -->
 <div class="grid grid-cols-4 gap-2 md:gap-4 mb-8 text-center">
-    <div class="bg-emerald-50 border border-emerald-100 p-3 md:p-5 rounded-xl flex flex-col justify-center items-center">
+    <button type="button" class="attendance-card bg-emerald-50 border border-emerald-100 p-3 md:p-5 rounded-xl flex flex-col justify-center items-center cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-400/30"
+            data-estado="Presentes"
+            data-estado-clave="Presente"
+            data-total="{{ stats.Presente.total }}"
+            data-m="{{ stats.Presente.M }}"
+            data-f="{{ stats.Presente.F }}"
+            data-fecha="{{ asistencia.fecha.strftime('%d/%m/%Y') }}"
+            data-hora="{{ asistencia.hora.strftime('%H:%M') }}"
+            data-seccion="{{ asistencia.seccion.nombre }}"
+            data-turno="{{ asistencia.turno }}"
+            data-estudiantes='{{ estudiantes_por_estado.Presente | tojson }}'>
         <span class="text-emerald-600 text-[9px] md:text-xs font-bold uppercase block mb-1">Presentes</span>
         <span class="text-xl md:text-2xl font-black text-emerald-800">{{ stats.Presente.total }}</span>
         <div class="text-[18px] md:text-[10px] font-bold text-emerald-600/70 mt-1 uppercase tracking-wider">M: {{ stats.Presente.M }} | F: {{ stats.Presente.F }}</div>
-    </div>
-    <div class="bg-red-50 border border-red-100 p-3 md:p-5 rounded-xl flex flex-col justify-center items-center">
+    </button>
+    <button type="button" class="attendance-card bg-red-50 border border-red-100 p-3 md:p-5 rounded-xl flex flex-col justify-center items-center cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all focus:outline-none focus:ring-2 focus:ring-red-400/30"
+            data-estado="Ausentes"
+            data-estado-clave="Ausente"
+            data-total="{{ stats.Ausente.total }}"
+            data-m="{{ stats.Ausente.M }}"
+            data-f="{{ stats.Ausente.F }}"
+            data-fecha="{{ asistencia.fecha.strftime('%d/%m/%Y') }}"
+            data-hora="{{ asistencia.hora.strftime('%H:%M') }}"
+            data-seccion="{{ asistencia.seccion.nombre }}"
+            data-turno="{{ asistencia.turno }}"
+            data-estudiantes='{{ estudiantes_por_estado.Ausente | tojson }}'>
         <span class="text-red-600 text-[9px] md:text-xs font-bold uppercase block mb-1">Ausentes</span>
         <span class="text-xl md:text-2xl font-black text-red-800">{{ stats.Ausente.total }}</span>
         <div class="text-[18px] md:text-[10px] font-bold text-red-600/70 mt-1 uppercase tracking-wider">M: {{ stats.Ausente.M }} | F: {{ stats.Ausente.F }}</div>
-    </div>
-    <div class="bg-amber-50 border border-amber-100 p-3 md:p-5 rounded-xl flex flex-col justify-center items-center">
+    </button>
+    <button type="button" class="attendance-card bg-amber-50 border border-amber-100 p-3 md:p-5 rounded-xl flex flex-col justify-center items-center cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all focus:outline-none focus:ring-2 focus:ring-amber-400/30"
+            data-estado="Permisos"
+            data-estado-clave="Permiso"
+            data-total="{{ stats.Permiso.total }}"
+            data-m="{{ stats.Permiso.M }}"
+            data-f="{{ stats.Permiso.F }}"
+            data-fecha="{{ asistencia.fecha.strftime('%d/%m/%Y') }}"
+            data-hora="{{ asistencia.hora.strftime('%H:%M') }}"
+            data-seccion="{{ asistencia.seccion.nombre }}"
+            data-turno="{{ asistencia.turno }}"
+            data-estudiantes='{{ estudiantes_por_estado.Permiso | tojson }}'>
         <span class="text-amber-600 text-[9px] md:text-xs font-bold uppercase block mb-1">Permisos</span>
         <span class="text-xl md:text-2xl font-black text-amber-800">{{ stats.Permiso.total }}</span>
         <div class="text-[18px] md:text-[10px] font-bold text-amber-600/70 mt-1 uppercase tracking-wider">M: {{ stats.Permiso.M }} | F: {{ stats.Permiso.F }}</div>
-    </div>
-    <div class="bg-slate-100 border border-slate-200 p-3 md:p-5 rounded-xl flex flex-col justify-center items-center">
+    </button>
+    <button type="button" class="attendance-card bg-slate-100 border border-slate-200 p-3 md:p-5 rounded-xl flex flex-col justify-center items-center cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all focus:outline-none focus:ring-2 focus:ring-slate-400/30"
+            data-estado="Escapes"
+            data-estado-clave="Escape"
+            data-total="{{ stats.Escape.total }}"
+            data-m="{{ stats.Escape.M }}"
+            data-f="{{ stats.Escape.F }}"
+            data-fecha="{{ asistencia.fecha.strftime('%d/%m/%Y') }}"
+            data-hora="{{ asistencia.hora.strftime('%H:%M') }}"
+            data-seccion="{{ asistencia.seccion.nombre }}"
+            data-turno="{{ asistencia.turno }}"
+            data-estudiantes='{{ estudiantes_por_estado.Escape | tojson }}'>
         <span class="text-slate-500 text-[9px] md:text-xs font-bold uppercase block mb-1">Escapes</span>
         <span class="text-xl md:text-2xl font-black text-slate-800">{{ stats.Escape.total }}</span>
         <div class="text-[18px] md:text-[10px] font-bold text-slate-500/70 mt-1 uppercase tracking-wider">M: {{ stats.Escape.M }} | F: {{ stats.Escape.F }}</div>
-    </div>
+    </button>
+</div>
+
+<div id="copy-feedback" class="fixed bottom-6 right-6 z-50 hidden rounded-xl bg-slate-900 text-white px-4 py-3 shadow-2xl text-sm font-bold">
+    Copiado al portapapeles
 </div>
 
 <!-- Listado Detallado -->
@@ -97,4 +141,82 @@
         </tbody>
     </table>
 </div>
+
+<script>
+function copyTextToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(text);
+    }
+
+    return new Promise((resolve, reject) => {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-9999px';
+        textarea.style.top = '0';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+
+        try {
+            const successful = document.execCommand('copy');
+            document.body.removeChild(textarea);
+            successful ? resolve() : reject(new Error('copy failed'));
+        } catch (error) {
+            document.body.removeChild(textarea);
+            reject(error);
+        }
+    });
+}
+
+function showCopyFeedback(message) {
+    const feedback = document.getElementById('copy-feedback');
+    feedback.textContent = message;
+    feedback.classList.remove('hidden');
+
+    clearTimeout(window.__attendanceCopyToast);
+    window.__attendanceCopyToast = setTimeout(() => {
+        feedback.classList.add('hidden');
+    }, 1800);
+}
+
+function buildCopyText(card) {
+    const estado = card.dataset.estado;
+    const total = card.dataset.total;
+    const m = card.dataset.m;
+    const f = card.dataset.f;
+    const fecha = card.dataset.fecha;
+    const hora = card.dataset.hora;
+    const seccion = card.dataset.seccion;
+    const turno = card.dataset.turno;
+    const estudiantes = JSON.parse(card.dataset.estudiantes || '[]');
+
+    return [
+        'Resumen de Asistencia',
+        `Sección: ${seccion}`,
+        `Fecha: ${fecha}`,
+        `Hora: ${hora}`,
+        `Turno: ${turno}`,
+        '',
+        `${estado}: ${total}`,
+        `M: ${m} | F: ${f}`,
+        '',
+        'Estudiantes:',
+        ...(estudiantes.length ? estudiantes.map(nombre => `- ${nombre}`) : ['- Sin estudiantes en este estado'])
+    ].join('\n');
+}
+
+document.querySelectorAll('.attendance-card').forEach(card => {
+    card.addEventListener('click', async () => {
+        const text = buildCopyText(card);
+
+        try {
+            await copyTextToClipboard(text);
+            showCopyFeedback(`Copiado: ${card.dataset.estado}`);
+        } catch (error) {
+            showCopyFeedback('No se pudo copiar');
+        }
+    });
+});
+</script>
 {% endblock %}

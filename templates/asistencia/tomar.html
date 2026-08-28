@@ -34,8 +34,8 @@
                     <label class="text-[10px] font-bold uppercase text-slate-400 mb-1">Turno</label>
                     <select name="turno" class="bg-slate-50 border-slate-200 rounded-lg text-sm font-bold pr-10"
                         required>
-                        <option value="Matutino">Matutino</option>
-                        <option value="Vespertino">Vespertino</option>
+                        <option value="Matutino" {% if turno_actual == 'Matutino' %}selected{% endif %}>Matutino</option>
+                        <option value="Vespertino" {% if turno_actual == 'Vespertino' %}selected{% endif %}>Vespertino</option>
                     </select>
                 </div>
             </div>
@@ -44,37 +44,38 @@
 
     <!-- Dashboard de Estadísticas en Vivo -->
     <div class="grid grid-cols-4 gap-2 md:gap-4 mb-8 text-center">
-        <div
-            class="bg-emerald-50 border border-emerald-100 p-3 md:p-5 rounded-xl flex flex-col justify-center items-center">
+        <button type="button" data-status-card="Presente"
+            class="bg-emerald-50 border border-emerald-100 p-3 md:p-5 rounded-xl flex flex-col justify-center items-center cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-400/30">
             <span class="text-emerald-600 text-[9px] md:text-xs font-bold uppercase block mb-1">Presentes</span>
             <span id="stat-presente" class="text-xl md:text-2xl font-black text-emerald-800">0</span>
             <div id="stat-presente-det"
                 class="text-[18px] md:text-[10px] font-bold text-emerald-600/70 mt-1 uppercase tracking-wider">M: 0 | F:
                 0</div>
-        </div>
-        <div class="bg-red-50 border border-red-100 p-3 md:p-5 rounded-xl flex flex-col justify-center items-center">
+        </button>
+        <button type="button" data-status-card="Ausente"
+            class="bg-red-50 border border-red-100 p-3 md:p-5 rounded-xl flex flex-col justify-center items-center cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all focus:outline-none focus:ring-2 focus:ring-red-400/30">
             <span class="text-red-600 text-[9px] md:text-xs font-bold uppercase block mb-1">Ausentes</span>
             <span id="stat-ausente" class="text-xl md:text-2xl font-black text-red-800">0</span>
             <div id="stat-ausente-det"
                 class="text-[18px] md:text-[10px] font-bold text-red-600/70 mt-1 uppercase tracking-wider">M: 0 | F: 0
             </div>
-        </div>
-        <div
-            class="bg-amber-50 border border-amber-100 p-3 md:p-5 rounded-xl flex flex-col justify-center items-center">
+        </button>
+        <button type="button" data-status-card="Permiso"
+            class="bg-amber-50 border border-amber-100 p-3 md:p-5 rounded-xl flex flex-col justify-center items-center cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all focus:outline-none focus:ring-2 focus:ring-amber-400/30">
             <span class="text-amber-600 text-[9px] md:text-xs font-bold uppercase block mb-1">Permisos</span>
             <span id="stat-permiso" class="text-xl md:text-2xl font-black text-amber-800">0</span>
             <div id="stat-permiso-det"
                 class="text-[18px] md:text-[10px] font-bold text-amber-600/70 mt-1 uppercase tracking-wider">M: 0 | F: 0
             </div>
-        </div>
-        <div
-            class="bg-slate-100 border border-slate-200 p-3 md:p-5 rounded-xl flex flex-col justify-center items-center">
+        </button>
+        <button type="button" data-status-card="Escape"
+            class="bg-slate-100 border border-slate-200 p-3 md:p-5 rounded-xl flex flex-col justify-center items-center cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all focus:outline-none focus:ring-2 focus:ring-slate-400/30">
             <span class="text-slate-500 text-[9px] md:text-xs font-bold uppercase block mb-1">Escapes</span>
             <span id="stat-escape" class="text-xl md:text-2xl font-black text-slate-800">0</span>
             <div id="stat-escape-det"
                 class="text-[18px] md:text-[10px] font-bold text-slate-500/70 mt-1 uppercase tracking-wider">M: 0 | F: 0
             </div>
-        </div>
+        </button>
     </div>
 
     <!-- Grid de Estudiantes -->
@@ -154,6 +155,10 @@
         </button>
     </div>
 </form>
+
+<div id="copy-feedback" class="fixed bottom-6 right-6 z-50 hidden rounded-xl bg-slate-900 text-white px-4 py-3 shadow-2xl text-sm font-bold">
+    Copiado al portapapeles
+</div>
 
 <script>
     const STATUS_SEQUENCE = ['Presente', 'Ausente', 'Permiso', 'Escape'];
@@ -237,8 +242,144 @@
         });
     }
 
+    function parseTimeToMinutes(timeValue) {
+        if (!timeValue) return 0;
+        const [hours, minutes] = timeValue.split(':').map(Number);
+        return (hours * 60) + (minutes || 0);
+    }
+
+    function formatTime12h(timeValue) {
+        if (!timeValue) return '';
+        const [hoursRaw, minutesRaw] = timeValue.split(':');
+        let hours = Number(hoursRaw);
+        const minutes = minutesRaw.padStart(2, '0');
+        const suffix = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        if (hours === 0) hours = 12;
+        return `${hours}:${minutes} ${suffix}`;
+    }
+
+    function syncTurnoWithHora() {
+        const horaInput = document.querySelector('input[name="hora"]');
+        const turnoSelect = document.querySelector('select[name="turno"]');
+        if (!horaInput || !turnoSelect) return;
+
+        const minutes = parseTimeToMinutes(horaInput.value);
+        turnoSelect.value = minutes < (12 * 60) ? 'Matutino' : 'Vespertino';
+    }
+
+    function copyTextToClipboard(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+            return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise((resolve, reject) => {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.left = '-9999px';
+            textarea.style.top = '0';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textarea);
+                successful ? resolve() : reject(new Error('copy failed'));
+            } catch (error) {
+                document.body.removeChild(textarea);
+                reject(error);
+            }
+        });
+    }
+
+    function showCopyFeedback(message) {
+        const feedback = document.getElementById('copy-feedback');
+        feedback.textContent = message;
+        feedback.classList.remove('hidden');
+
+        clearTimeout(window.__attendanceCopyToast);
+        window.__attendanceCopyToast = setTimeout(() => {
+            feedback.classList.add('hidden');
+        }, 1800);
+    }
+
+    function buildStatusCopyText(status) {
+        const labels = {
+            'Presente': 'Presentes',
+            'Ausente': 'Ausentes',
+            'Permiso': 'Permisos',
+            'Escape': 'Escapes'
+        };
+
+        const counts = {
+            'Presente': {
+                total: document.getElementById('stat-presente').innerText,
+                detail: document.getElementById('stat-presente-det').innerText,
+            },
+            'Ausente': {
+                total: document.getElementById('stat-ausente').innerText,
+                detail: document.getElementById('stat-ausente-det').innerText,
+            },
+            'Permiso': {
+                total: document.getElementById('stat-permiso').innerText,
+                detail: document.getElementById('stat-permiso-det').innerText,
+            },
+            'Escape': {
+                total: document.getElementById('stat-escape').innerText,
+                detail: document.getElementById('stat-escape-det').innerText,
+            }
+        };
+
+        const estudiantes = Array.from(document.querySelectorAll('input[type="hidden"][id^="input-"]'))
+            .filter(input => input.value === status)
+            .map(input => {
+                const id = input.id.split('-')[1];
+                const card = document.getElementById(`card-${id}`);
+                const apellido = card.querySelector('h4')?.innerText?.trim() || '';
+                const nombre = card.querySelector('p')?.innerText?.trim() || '';
+                return `${apellido}, ${nombre}`.replace(/, $/, '');
+            });
+
+        return [
+            'Resumen de Asistencia',
+            `Sección: {{ seccion.nombre }}`,
+            `Turno: ${document.querySelector('select[name="turno"]').value}`,
+            `Hora: ${formatTime12h(document.querySelector('input[name="hora"]').value)}`,
+            '',
+            `${labels[status]}: ${counts[status].total}`,
+            counts[status].detail,
+            '',
+            'Estudiantes:',
+            ...(estudiantes.length ? estudiantes.map(nombre => `- ${nombre}`) : ['- Sin estudiantes en este estado'])
+        ].join('\n');
+    }
+
+    document.querySelectorAll('[data-status-card]').forEach(card => {
+        card.addEventListener('click', async () => {
+            const status = card.getAttribute('data-status-card');
+            const text = buildStatusCopyText(status);
+
+            try {
+                await copyTextToClipboard(text);
+                showCopyFeedback(`Copiado: ${status}`);
+            } catch (error) {
+                showCopyFeedback('No se pudo copiar');
+            }
+        });
+    });
+
     // Inicializar estilos al cargar
     document.addEventListener('DOMContentLoaded', () => {
+        syncTurnoWithHora();
+
+        const horaInput = document.querySelector('input[name="hora"]');
+        if (horaInput) {
+            horaInput.addEventListener('input', syncTurnoWithHora);
+            horaInput.addEventListener('change', syncTurnoWithHora);
+        }
+
         const allInputs = document.querySelectorAll('input[type="hidden"][id^="input-"]');
         allInputs.forEach(input => {
             const id = input.id.split('-')[1];
