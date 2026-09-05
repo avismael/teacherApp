@@ -167,5 +167,5 @@ Preview de arquitectura:
 
 ---
 
-## ✒️ Autor
+## ✒️ @Avismael
 Desarrollado con ❤️ para mejorar la gestión educativa.
