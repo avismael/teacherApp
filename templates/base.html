@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}TeacherApp{% endblock %}</title>
+
+    <script>
+        (function () {
+            const stored = localStorage.getItem('teacherapp-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = stored || (prefersDark ? 'dark' : 'light');
+            document.documentElement.classList.toggle('dark', theme === 'dark');
+            document.documentElement.style.colorScheme = theme;
+        })();
+    </script>
     
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/favicon/apple-touch-icon.png') }}">
@@ -19,22 +29,40 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex">
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex transition-colors duration-300">
 
     <!-- Desktop Sidebar (Hidden on mobile) -->
     <aside id="app-sidebar" class="print:hidden bg-secondary text-white hidden lg:flex flex-col shadow-xl transition-all duration-300 ease-in-out w-64 flex-shrink-0 z-50 h-screen sticky top-0 group">
         
         <!-- Cabecera Logo (Botón Toggle Universal) -->
-        <button id="logo-toggle" class="h-16 w-full flex items-center px-2 font-bold text-xl tracking-tight border-b border-slate-700/50 z-20 hover:bg-slate-800 transition-colors focus:outline-none relative group/logo cursor-pointer">
-            <div class="flex items-center overflow-hidden whitespace-nowrap pointer-events-none">
-                <span class="text-accent text-3xl w-16 text-center flex-shrink-0 group-hover/logo:scale-110 active:scale-95 transition-transform" title="Expandir/Contraer Menú">👨‍🏫</span> 
-                <span class="nav-text font-black transition-opacity duration-300 lg:opacity-100 opacity-0 relative top-1">TeacherApp</span>
-            </div>
-            <!-- Pequeño icono de pistas visuales -->
-            <div class="absolute right-3 text-slate-500 opacity-0 group-[.expanded]/logo:rotate-180 transition-all lg:group-hover/logo:opacity-100 hidden lg:block">
-                ⇋
-            </div>
-        </button>
+        <div class="relative h-16 w-full border-b border-slate-700/50 z-20">
+            <button id="logo-toggle" class="h-full w-full flex items-center px-2 pr-20 font-bold text-xl tracking-tight hover:bg-slate-800 transition-colors focus:outline-none relative group/logo cursor-pointer">
+                <div class="flex items-center overflow-hidden whitespace-nowrap pointer-events-none">
+                    <span class="text-accent text-3xl w-16 text-center flex-shrink-0 group-hover/logo:scale-110 active:scale-95 transition-transform" title="Expandir/Contraer Menú">👨‍🏫</span> 
+                    <span class="nav-text font-black transition-opacity duration-300 lg:opacity-100 opacity-0 relative top-1">TeacherApp</span>
+                </div>
+                <!-- Pequeño icono de pistas visuales -->
+                <div class="absolute right-3 text-slate-500 opacity-0 group-[.expanded]/logo:rotate-180 transition-all lg:group-hover/logo:opacity-100 hidden lg:block">
+                    ⇋
+                </div>
+            </button>
+            <button id="theme-toggle-desktop" type="button" aria-label="Cambiar tema" class="absolute right-10 top-1/2 -translate-y-1/2 h-10 w-10 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-white flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-accent/40">
+                <svg data-theme-icon="moon" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"></path>
+                </svg>
+                <svg data-theme-icon="sun" class="w-5 h-5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="4"></circle>
+                    <path d="M12 2v2"></path>
+                    <path d="M12 20v2"></path>
+                    <path d="m4.93 4.93 1.41 1.41"></path>
+                    <path d="m17.66 17.66 1.41 1.41"></path>
+                    <path d="M2 12h2"></path>
+                    <path d="M20 12h2"></path>
+                    <path d="m6.34 17.66-1.41 1.41"></path>
+                    <path d="m19.07 4.93-1.41 1.41"></path>
+                </svg>
+            </button>
+        </div>
 
         <!-- Links de Navegación -->
         <nav class="flex-1 py-6 flex flex-col gap-2 px-2 overflow-y-auto overflow-x-hidden z-20 tooltip-container">
@@ -78,11 +106,29 @@
                 <span class="text-2xl">👨‍🏫</span>
                 TeacherApp
             </div>
-            <button id="mobile-menu-btn" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors focus:outline-none flex items-center justify-center">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-            </button>
+            <div class="flex items-center gap-2">
+                <button id="theme-toggle-mobile" type="button" aria-label="Cambiar tema" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors focus:outline-none flex items-center justify-center">
+                    <svg data-theme-icon="moon" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"></path>
+                    </svg>
+                    <svg data-theme-icon="sun" class="w-6 h-6 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <path d="M12 2v2"></path>
+                        <path d="M12 20v2"></path>
+                        <path d="m4.93 4.93 1.41 1.41"></path>
+                        <path d="m17.66 17.66 1.41 1.41"></path>
+                        <path d="M2 12h2"></path>
+                        <path d="M20 12h2"></path>
+                        <path d="m6.34 17.66-1.41 1.41"></path>
+                        <path d="m19.07 4.93-1.41 1.41"></path>
+                    </svg>
+                </button>
+                <button id="mobile-menu-btn" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors focus:outline-none flex items-center justify-center">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
         </div>
         <!-- Flash messages -->
         <div class="print:hidden px-8 pt-6">

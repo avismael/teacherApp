@@ -1,8 +1,35 @@
 // app.js
 document.addEventListener('DOMContentLoaded', () => {
+    const themeStorageKey = 'teacherapp-theme';
     const sidebar = document.getElementById('app-sidebar');
     const logoToggle = document.getElementById('logo-toggle');
     const navTexts = document.querySelectorAll('.nav-text');
+    const themeButtons = document.querySelectorAll('#theme-toggle-desktop, #theme-toggle-mobile');
+
+    function applyTheme(theme) {
+        const isDark = theme === 'dark';
+        document.documentElement.classList.toggle('dark', isDark);
+        document.documentElement.style.colorScheme = theme;
+        localStorage.setItem(themeStorageKey, theme);
+
+        themeButtons.forEach((button) => {
+            const moon = button.querySelector('[data-theme-icon="moon"]');
+            const sun = button.querySelector('[data-theme-icon="sun"]');
+            if (moon && sun) {
+                moon.classList.toggle('hidden', isDark);
+                sun.classList.toggle('hidden', !isDark);
+            }
+            button.setAttribute('aria-label', isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+        });
+    }
+
+    function getInitialTheme() {
+        const stored = localStorage.getItem(themeStorageKey);
+        if (stored === 'dark' || stored === 'light') return stored;
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    applyTheme(getInitialTheme());
 
     let isExpanded = window.innerWidth >= 1024;
 
@@ -40,6 +67,19 @@ document.addEventListener('DOMContentLoaded', () => {
             renderSidebar();
         });
     }
+
+    themeButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            const nextTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+            applyTheme(nextTheme);
+        });
+    });
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+        if (!localStorage.getItem(themeStorageKey)) {
+            applyTheme(event.matches ? 'dark' : 'light');
+        }
+    });
 
     // Auto colapsar en móviles al tocar cualquier lado oscuro de fuera
     document.addEventListener('click', (e) => {
